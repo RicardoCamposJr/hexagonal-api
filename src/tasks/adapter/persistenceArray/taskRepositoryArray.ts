@@ -4,10 +4,12 @@ import TaskRepository from "../../domain/port/TaskRepository"
 export default class TaskRepositoryArray implements TaskRepository {
 
   private taskArray : Task[] | null = []
+  private id: number = 0
 
   async save(task: Task, callback: (err: Error | null, tasks?: Task) => void): Promise<void> {
+    task.id = this.id
+    this.id += 1
     await this.taskArray?.push(task)
-    console.log(this.taskArray)
     callback(null, task)
   }
 

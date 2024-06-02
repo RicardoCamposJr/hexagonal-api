@@ -12,7 +12,7 @@ const app = express();
 app.use(express.json());
 app.use('/tasks', taskController.buildRouter());
 
-const PORT = 3001;
+const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
