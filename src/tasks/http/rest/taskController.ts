@@ -23,72 +23,86 @@ export default class TaskController {
   async registerTaskHandler(req: Request, res: Response) {
     const registerTaskUseCase = new RegisterTaskUseCase(this.taskRepository)
 
-    const { title, description } = req.body
-    const task = new Task(null, title, description, 'active')
+    try {
+      const now = new Date()
+      const isoDate = now.toISOString()
 
-    registerTaskUseCase.execute(task, (err, task) => {
-      if (err) {
-        res.status(500).send(err.message)
-      } else {
-        res.status(201).json(task)
+      const { title, description, priority } = req.body
+
+      if (!title) {
+        return res.status(400).send('Insira um título para a task!')
+      } else if (!priority) {
+        return res.status(400).send('A task deve ter um grau de prioridade!')
       }
-    })
+
+      const task = new Task(null, title, description, 'active', priority, isoDate)
+
+      registerTaskUseCase.execute(task, (err, task) => {
+        if (err) {
+          return res.status(500).send(err.message)
+        } else {
+          return res.status(201).json(task)
+        }
+      })
+    } catch (error) {
+      return res.status(500).send(error)
+    }
   }
 
   async findAllTasksHandler(req: Request, res: Response) {
-    const findAllTasksUseCase = new FindAllTasksUseCase(this.taskRepository)
+    // const findAllTasksUseCase = new FindAllTasksUseCase(this.taskRepository)
 
-    findAllTasksUseCase.execute((err, tasks) => {
-      if (err) {
-        res.status(500).send(err.message)
-      } else {
-        res.status(200).json(tasks)
-      }
-    })
+    // findAllTasksUseCase.execute((err, tasks) => {
+    //   if (err) {
+    //     res.status(500).send(err.message)
+    //   } else {
+    //     res.status(200).json(tasks)
+    //   }
+    // })
   }
 
   async findByTaskIdHandler(req: Request, res: Response) {
-    const findByTaskIdUseCase = new FindByTaskIdTasksUseCase(this.taskRepository)
+    // const findByTaskIdUseCase = new FindByTaskIdTasksUseCase(this.taskRepository)
 
-    const id = parseInt(req.params.id, 10)
+    // const id = parseInt(req.params.id, 10)
 
-    findByTaskIdUseCase.execute(id, (err, task) => {
-      if (err) {
-        res.status(500).send(err.message)
-      } else if (!task) {
-        res.status(404).send('Task not found')
-      } else {
-        res.status(200).json(task)
-      }
-    })
+    // findByTaskIdUseCase.execute(id, (err, task) => {
+    //   if (err) {
+    //     res.status(500).send(err.message)
+    //   } else if (!task) {
+    //     res.status(404).send('Task not found')
+    //   } else {
+    //     res.status(200).json(task)
+    //   }
+    // })
   }
 
   async updateTaskHandler(req: Request, res: Response) {
-    const updateTaskUseCase = new UpdateTaskUseCase(this.taskRepository)
+    // const updateTaskUseCase = new UpdateTaskUseCase(this.taskRepository)
 
-    const id = parseInt(req.params.id, 10)
-    const { title, description, status } = req.body
-    const task = new Task(id, title, description, status)
+    // const id = parseInt(req.params.id, 10)
+    // const { title, description, status, priority } = req.body
+    // const task = new Task(id, title, description, status, )
 
-    updateTaskUseCase.execute(task, (err, task) => {
-      if (err) {
-        res.status(500).send(err.message)
-      } else {
-        res.status(200).json(task)
-      }
-    })
+    // updateTaskUseCase.execute(task, (err, task) => {
+    //   if (err) {
+    //     res.status(500).send(err.message)
+    //   } else {
+    //     res.status(200).json(task)
+    //   }
+    // })
   }
 
   async deleteTaskHandler(req: Request, res: Response) {
-    const deleteTaskUseCase = new DeleteTaskUseCase(this.taskRepository)
+  //   const deleteTaskUseCase = new DeleteTaskUseCase(this.taskRepository)
 
-    const id = parseInt(req.params.id, 10)
-    deleteTaskUseCase.execute(id, (err) => {
-      if (err) {
-        res.status(500).send(err.message)
-      } else {
-        res.status(204).send()
-      }
-    })
+  //   const id = parseInt(req.params.id, 10)
+  //   deleteTaskUseCase.execute(id, (err) => {
+  //     if (err) {
+  //       res.status(500).send(err.message)
+  //     } else {
+  //       res.status(204).send()
+  //     }
+  //   })
   }
 }

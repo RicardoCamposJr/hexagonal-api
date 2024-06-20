@@ -1,10 +1,10 @@
 import express from 'express';
-// import TaskRepositoryDB from './tasks/adapter/persistence/taskRepositoryDB';
+import TaskRepositoryDB from './tasks/adapter/persistence/taskRepositoryDB';
 import TaskController from './tasks/http/rest/taskController';
-import TaskRepositoryArray from './tasks/adapter/persistenceArray/taskRepositoryArray';
+// import TaskRepositoryArray from './tasks/adapter/persistenceArray/taskRepositoryArray';
 
-// const taskRepository = new TaskRepositoryDB()
-const taskRepository = new TaskRepositoryArray()
+const taskRepository = new TaskRepositoryDB()
+// const taskRepository = new TaskRepositoryArray()
 const taskController = new TaskController(taskRepository)
 
 const app = express();

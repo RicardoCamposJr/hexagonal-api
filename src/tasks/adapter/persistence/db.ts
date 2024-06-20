@@ -12,7 +12,9 @@ async function setupDatabase() {
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     description TEXT,
-    status ENUM('active', 'concluded', 'removed') NOT NULL DEFAULT 'active'
+    status ENUM('active', 'concluded', 'removed') NOT NULL DEFAULT 'active',
+    priority ENUM('low', 'medium', 'high') NOT NULL,
+    createdAt VARCHAR(255)
   )`)
 
   return connection
