@@ -7,7 +7,7 @@ export default class Task {
     public title: string,
     public description: string,
     public status: TStatus | null,
-    public priority: TPriority,
-    public createdAt: string
+    public priority: TPriority | null,
+    public createdAt: string | null
   ) {}
 }
