@@ -73,4 +73,50 @@ export default class TaskRepositoryDB implements TaskRepository {
     await connection.execute(query, [id])
     callback(null, true)
   }
+
+  async findAllTasksActive(callback: (err: Error | null, tasks?: Task[]) => void): Promise<void> {
+    const connection = await setupDatabase()
+    const query = `SELECT * FROM tasks WHERE status = "active"`
+    const [rows] = await connection.execute(query)
+    const tasks = (rows as any[]).map(row => new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt))
+    callback(null, tasks)
+  }
+
+  async findAllTasksConcluded(callback: (err: Error | null, tasks?: Task[]) => void): Promise<void> {
+    const connection = await setupDatabase()
+    const query = `SELECT * FROM tasks WHERE status = "concluded"`
+    const [rows] = await connection.execute(query)
+    const tasks = (rows as any[]).map(row => new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt))
+    callback(null, tasks)
+  }
+
+  async findAllTasksRemoved(callback: (err: Error | null, tasks?: Task[]) => void): Promise<void> {
+    const connection = await setupDatabase()
+    const query = `SELECT * FROM tasks WHERE status = "removed"`
+    const [rows] = await connection.execute(query)
+    const tasks = (rows as any[]).map(row => new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt))
+    callback(null, tasks)
+  }
+
+  async updateTaskTitle(id: number, title: string, callback: (err: Error | null, task?: Task | null) => void): Promise<void> {
+    const connection = await setupDatabase()
+    const query = `UPDATE tasks SET title = ? WHERE id = ?`
+    await connection.execute(query, [title, id])
+    const [rows] = await connection.execute(`SELECT * FROM tasks WHERE id = ?`, [id])
+    const row = (rows as any[])[0]
+    if (!row) return callback(null, null)
+    const taskReturn = new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt)
+    callback(null, taskReturn)
+  }
+
+  async updateTaskDescription(id: number, description: string, callback: (err: Error | null, task?: Task | null) => void): Promise<void> {
+    const connection = await setupDatabase()
+    const query = `UPDATE tasks SET description = ? WHERE id = ?`
+    await connection.execute(query, [description, id])
+    const [rows] = await connection.execute(`SELECT * FROM tasks WHERE id = ?`, [id])
+    const row = (rows as any[])[0]
+    if (!row) return callback(null, null)
+    const taskReturn = new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt)
+    callback(null, taskReturn)
+  }
 }
