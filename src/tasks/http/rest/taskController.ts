@@ -13,6 +13,9 @@ import FindAllTasksConcludedUseCase from "../../domain/usecase/findAllTasksConcl
 import FindAllTasksRemovedUseCase from "../../domain/usecase/findAllTasksRemovedUseCase"
 import UpdateTaskTitleUseCase from "../../domain/usecase/updateTaskTitleUseCase"
 import UpdateTaskDescriptionUseCase from "../../domain/usecase/updateTaskDescriptionUseCase"
+import UpdateTaskToLowUseCase from "../../domain/usecase/updateTaskToLowUseCase"
+import UpdateTaskToMediumUseCase from "../../domain/usecase/updateTaskToMediumUseCase"
+import UpdateTaskToHighUseCase from "../../domain/usecase/updateTaskToHighUseCase"
 
 
 export default class TaskController {
@@ -31,6 +34,9 @@ export default class TaskController {
     router.patch("/:id/conclude", this.updateTaskToConcludedHandler.bind(this))
     router.patch("/:id/active", this.updateTaskToActiveHandler.bind(this))
     router.patch("/:id/remove", this.updateTaskToRemovedHandler.bind(this))
+    router.patch("/:id/low", this.updateTaskToLowHandler.bind(this))
+    router.patch("/:id/medium", this.updateTaskToMediumHandler.bind(this))
+    router.patch("/:id/high", this.updateTaskToHighHandler.bind(this))
     router.delete("/:id", this.deleteTaskHandler.bind(this))
 
     return router
@@ -435,6 +441,132 @@ export default class TaskController {
         }
 
         updateTaskDescriptionUseCase.execute(id, description, (err, task) => {
+          if (err) {
+
+            return res.status(500).send(err.message)
+
+          } else if (!task) {
+
+            return res.status(404).json({
+              message: "Não foi possível encontrar a task. Não temos uma task com esse id!",
+              hint: 'Por favor, insira um id válido.'
+            })
+          } else {
+            return res.status(200).json(task)
+          }
+        })
+      }
+    } catch (error) {
+      return res.status(500).send({
+        message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
+        details: error,
+        hint: 'Por favor, tente novamente mais tarde ou contate o suporte se o problema persistir.'
+      })
+    }
+  }
+
+  async updateTaskToLowHandler(req: Request, res: Response) {
+    const updateTaskToLowUseCase = new UpdateTaskToLowUseCase(this.taskRepository)
+
+    try {
+      let id
+
+      id = parseInt(req.params.id, 10)
+
+      if (req.params.id) {
+
+        if (isNaN(id) ) {
+          return res.status(400).send({
+            message: "Não foi possível buscar a task. O id de busca não é do tipo number!",
+            hint: 'Por favor, insira o id de busca do tipo number para realizar a ação.'
+          })
+        }
+
+        updateTaskToLowUseCase.execute(id, (err, task) => {
+          if (err) {
+
+            return res.status(500).send(err.message)
+
+          } else if (!task) {
+
+            return res.status(404).json({
+              message: "Não foi possível encontrar a task. Não temos uma task com esse id!",
+              hint: 'Por favor, insira um id válido.'
+            })
+          } else {
+            return res.status(200).json(task)
+          }
+        })
+      }
+    } catch (error) {
+      return res.status(500).send({
+        message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
+        details: error,
+        hint: 'Por favor, tente novamente mais tarde ou contate o suporte se o problema persistir.'
+      })
+    }
+  }
+
+  async updateTaskToMediumHandler(req: Request, res: Response) {
+    const updateTaskToMediumUseCase = new UpdateTaskToMediumUseCase(this.taskRepository)
+
+    try {
+      let id
+
+      id = parseInt(req.params.id, 10)
+
+      if (req.params.id) {
+
+        if (isNaN(id) ) {
+          return res.status(400).send({
+            message: "Não foi possível buscar a task. O id de busca não é do tipo number!",
+            hint: 'Por favor, insira o id de busca do tipo number para realizar a ação.'
+          })
+        }
+
+        updateTaskToMediumUseCase.execute(id, (err, task) => {
+          if (err) {
+
+            return res.status(500).send(err.message)
+
+          } else if (!task) {
+
+            return res.status(404).json({
+              message: "Não foi possível encontrar a task. Não temos uma task com esse id!",
+              hint: 'Por favor, insira um id válido.'
+            })
+          } else {
+            return res.status(200).json(task)
+          }
+        })
+      }
+    } catch (error) {
+      return res.status(500).send({
+        message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
+        details: error,
+        hint: 'Por favor, tente novamente mais tarde ou contate o suporte se o problema persistir.'
+      })
+    }
+  }
+
+  async updateTaskToHighHandler(req: Request, res: Response) {
+    const updateTaskToHighUseCase = new UpdateTaskToHighUseCase(this.taskRepository)
+
+    try {
+      let id
+
+      id = parseInt(req.params.id, 10)
+
+      if (req.params.id) {
+
+        if (isNaN(id) ) {
+          return res.status(400).send({
+            message: "Não foi possível buscar a task. O id de busca não é do tipo number!",
+            hint: 'Por favor, insira o id de busca do tipo number para realizar a ação.'
+          })
+        }
+
+        updateTaskToHighUseCase.execute(id, (err, task) => {
           if (err) {
 
             return res.status(500).send(err.message)

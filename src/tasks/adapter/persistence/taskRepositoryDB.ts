@@ -119,4 +119,37 @@ export default class TaskRepositoryDB implements TaskRepository {
     const taskReturn = new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt)
     callback(null, taskReturn)
   }
+
+  async updateTaskToLow(id: number, callback: (err: Error | null, task?: Task | null) => void): Promise<void> {
+    const connection = await setupDatabase()
+    const query = `UPDATE tasks SET priority = ? WHERE id = ?`
+    await connection.execute(query, ["low", id])
+    const [rows] = await connection.execute(`SELECT * FROM tasks WHERE id = ?`, [id])
+    const row = (rows as any[])[0]
+    if (!row) return callback(null, null)
+    const taskReturn = new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt)
+    callback(null, taskReturn)
+  }
+
+  async updateTaskToMedium(id: number, callback: (err: Error | null, task?: Task | null) => void): Promise<void> {
+    const connection = await setupDatabase()
+    const query = `UPDATE tasks SET priority = ? WHERE id = ?`
+    await connection.execute(query, ["medium", id])
+    const [rows] = await connection.execute(`SELECT * FROM tasks WHERE id = ?`, [id])
+    const row = (rows as any[])[0]
+    if (!row) return callback(null, null)
+    const taskReturn = new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt)
+    callback(null, taskReturn)
+  }
+
+  async updateTaskToHigh(id: number, callback: (err: Error | null, task?: Task | null) => void): Promise<void> {
+    const connection = await setupDatabase()
+    const query = `UPDATE tasks SET priority = ? WHERE id = ?`
+    await connection.execute(query, ["high", id])
+    const [rows] = await connection.execute(`SELECT * FROM tasks WHERE id = ?`, [id])
+    const row = (rows as any[])[0]
+    if (!row) return callback(null, null)
+    const taskReturn = new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt)
+    callback(null, taskReturn)
+  }
 }

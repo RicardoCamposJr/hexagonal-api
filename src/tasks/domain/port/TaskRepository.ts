@@ -13,4 +13,7 @@ export default interface TaskRepository {
   delete(id: number, callback: (err: Error | null, isAproved?: boolean) => void): Promise<void>
   updateTaskTitle(id: number, title: string, callback: (err: Error | null, task?: Task | null) => void): Promise<void>
   updateTaskDescription(id: number, description: string, callback: (err: Error | null, task?: Task | null) => void): Promise<void>
+  updateTaskToLow(id: number, callback: (err: Error | null, task?: Task | null) => void): Promise<void>
+  updateTaskToMedium(id: number, callback: (err: Error | null, task?: Task | null) => void): Promise<void>
+  updateTaskToHigh(id: number, callback: (err: Error | null, task?: Task | null) => void): Promise<void>
 }
