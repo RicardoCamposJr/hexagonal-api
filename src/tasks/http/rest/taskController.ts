@@ -52,9 +52,20 @@ export default class TaskController {
       const { title, description, priority } = req.body
 
       if (!title) {
-        return res.status(400).send('Insira um título para a task!')
+        return res.status(400).send({
+          message: "Não foi possível criar a task. O título não foi encontrado!",
+          hint: 'Por favor, defina um título para a task!'
+        })
       } else if (!priority) {
-        return res.status(400).send('A task deve ter um grau de prioridade!')
+        return res.status(400).send({
+          message: "Não foi possível criar a task. A prioridade não foi encontrada!",
+          hint: 'Por favor, defina uma prioridade para a task!'
+        })
+      } else if (!description) {
+        return res.status(400).send({
+          message: "Não foi possível criar a task. A descrição não foi encontrada!",
+          hint: 'Por favor, insira uma descrição para a task!'
+        })
       }
 
       const task = new Task(null, title, description, 'active', priority, isoDate)
@@ -405,6 +416,11 @@ export default class TaskController {
             return res.status(200).json(task)
           }
         })
+      } else {
+        return res.status(400).send({
+          message: "Não foi possível atualizar o título da task. O id da task não foi inserido!",
+          hint: 'Por favor, informe o id para realizar a ação.'
+        })
       }
     } catch (error) {
       return res.status(500).send({
@@ -454,6 +470,11 @@ export default class TaskController {
           } else {
             return res.status(200).json(task)
           }
+        })
+      } else {
+        return res.status(400).send({
+          message: "Não foi possível atualizar a descrição da task. O id da task não foi inserido!",
+          hint: 'Por favor, informe o id para realizar a ação.'
         })
       }
     } catch (error) {
