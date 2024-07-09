@@ -1,5 +1,5 @@
 import Task from "../../domain/entity/Task"
-import TaskRepository from "../../domain/port/TaskRepository"
+import TaskRepository from "../../domain/port/ITaskRepository"
 
 export default class TaskRepositoryArray implements TaskRepository {
 

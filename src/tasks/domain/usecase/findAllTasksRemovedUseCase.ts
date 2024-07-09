@@ -1,5 +1,5 @@
 import Task from "../entity/Task"
-import TaskRepository from "../port/TaskRepository"
+import TaskRepository from "../port/ITaskRepository"
 
 export default class FindAllTasksRemovedUseCase {
   constructor(readonly taskRepository: TaskRepository) {}

@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express"
 import Task from "../../domain/entity/Task"
-import TaskRepository from "../../domain/port/TaskRepository"
+import TaskRepository from "../../domain/port/ITaskRepository"
 import RegisterTaskUseCase from "../../domain/usecase/registerTaskUseCase"
 import FindAllTasksUseCase from "../../domain/usecase/findAllTasksUseCase"
 import FindByTaskIdTasksUseCase from "../../domain/usecase/findByTaskIdUseCase"

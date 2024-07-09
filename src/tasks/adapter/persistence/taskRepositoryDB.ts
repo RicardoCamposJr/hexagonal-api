@@ -1,5 +1,5 @@
 import Task from "../../domain/entity/Task"
-import TaskRepository from "../../domain/port/TaskRepository"
+import TaskRepository from "../../domain/port/ITaskRepository"
 import setupDatabase from "./db"
 
 export default class TaskRepositoryDB implements TaskRepository {
