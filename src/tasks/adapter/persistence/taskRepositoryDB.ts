@@ -152,4 +152,28 @@ export default class TaskRepositoryDB implements TaskRepository {
     const taskReturn = new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt)
     callback(null, taskReturn)
   }
+
+  async findAllTasksLow(callback: (err: Error | null, tasks?: Task[]) => void): Promise<void> {
+    const connection = await setupDatabase()
+    const query = `SELECT * FROM tasks WHERE priority = "low"`
+    const [rows] = await connection.execute(query)
+    const tasks = (rows as any[]).map(row => new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt))
+    callback(null, tasks)
+  }
+
+  async findAllTasksMedium(callback: (err: Error | null, tasks?: Task[]) => void): Promise<void> {
+    const connection = await setupDatabase()
+    const query = `SELECT * FROM tasks WHERE priority = "medium"`
+    const [rows] = await connection.execute(query)
+    const tasks = (rows as any[]).map(row => new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt))
+    callback(null, tasks)
+  }
+
+  async findAllTasksHigh(callback: (err: Error | null, tasks?: Task[]) => void): Promise<void> {
+    const connection = await setupDatabase()
+    const query = `SELECT * FROM tasks WHERE priority = "high"`
+    const [rows] = await connection.execute(query)
+    const tasks = (rows as any[]).map(row => new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt))
+    callback(null, tasks)
+  }
 }

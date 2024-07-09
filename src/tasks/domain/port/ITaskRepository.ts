@@ -16,4 +16,7 @@ export default interface TaskRepository {
   updateTaskToLow(id: number, callback: (err: Error | null, task?: Task | null) => void): Promise<void>
   updateTaskToMedium(id: number, callback: (err: Error | null, task?: Task | null) => void): Promise<void>
   updateTaskToHigh(id: number, callback: (err: Error | null, task?: Task | null) => void): Promise<void>
+  findAllTasksLow(callback: (err: Error | null, tasks?: Task[]) => void): Promise<void>
+  findAllTasksMedium(callback: (err: Error | null, tasks?: Task[]) => void): Promise<void>
+  findAllTasksHigh(callback: (err: Error | null, tasks?: Task[]) => void): Promise<void>
 }

@@ -16,6 +16,9 @@ import UpdateTaskDescriptionUseCase from "../../domain/usecase/updateTaskDescrip
 import UpdateTaskToLowUseCase from "../../domain/usecase/updateTaskToLowUseCase"
 import UpdateTaskToMediumUseCase from "../../domain/usecase/updateTaskToMediumUseCase"
 import UpdateTaskToHighUseCase from "../../domain/usecase/updateTaskToHighUseCase"
+import FindAllTasksLowUseCase from "../../domain/usecase/findAllTasksLowUseCase"
+import FindAllTasksMediumUseCase from "../../domain/usecase/findAllTasksMediumUseCase"
+import FindAllTasksHighUseCase from "../../domain/usecase/findAllTasksHighUseCase"
 
 
 export default class TaskController {
@@ -28,6 +31,9 @@ export default class TaskController {
     router.get("/active", this.findAllTasksActiveHandler.bind(this))
     router.get("/concluded", this.findAllTasksConcludedHandler.bind(this))
     router.get("/removed", this.findAllTasksRemovedHandler.bind(this))
+    router.get("/low", this.findAllTasksLowHandler.bind(this))
+    router.get("/medium", this.findAllTasksMediumHandler.bind(this))
+    router.get("/high", this.findAllTasksHighHandler.bind(this))
     router.patch("/title", this.updateTaskTitleHandler.bind(this))
     router.patch("/description", this.updateTaskDescriptionHandler.bind(this))
     router.get("/:id", this.findByTaskIdHandler.bind(this))
@@ -52,16 +58,19 @@ export default class TaskController {
       const { title, description, priority } = req.body
 
       if (!title) {
+
         return res.status(400).send({
           message: "Não foi possível criar a task. O título não foi encontrado!",
           hint: 'Por favor, defina um título para a task!'
         })
       } else if (!priority) {
+
         return res.status(400).send({
           message: "Não foi possível criar a task. A prioridade não foi encontrada!",
           hint: 'Por favor, defina uma prioridade para a task!'
         })
       } else if (!description) {
+
         return res.status(400).send({
           message: "Não foi possível criar a task. A descrição não foi encontrada!",
           hint: 'Por favor, insira uma descrição para a task!'
@@ -72,7 +81,13 @@ export default class TaskController {
 
       registerTaskUseCase.execute(task, (err, task) => {
         if (err) {
-          return res.status(500).send(err.message)
+
+          return res.status(500).send({
+            message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
+            details: err.message,
+            hint: 'Por favor, tente novamente mais tarde ou contate o suporte se o problema persistir.'
+          })
+
         } else {
           return res.status(201).json(task)
         }
@@ -92,12 +107,19 @@ export default class TaskController {
     try {
       findAllTasksUseCase.execute((err, tasks) => {
         if (err) {
-          return res.status(500).send(err.message)
+
+          return res.status(500).send({
+            message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
+            details: err.message,
+            hint: 'Por favor, tente novamente mais tarde ou contate o suporte se o problema persistir.'
+          })
         } else {
+
           return res.status(200).json(tasks)
         }
       })
     } catch (error) {
+
       return res.status(500).send({
         message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
         details: error,
@@ -117,6 +139,7 @@ export default class TaskController {
       if (req.params.id) {
 
         if (isNaN(id) ) {
+
           return res.status(400).send({
             message: "Não foi possível buscar a task. O id de busca não é do tipo number!",
             hint: 'Por favor, insira o id de busca do tipo number para realizar a ação.'
@@ -125,14 +148,25 @@ export default class TaskController {
 
         findByTaskIdUseCase.execute(id, (err, task) => {
           if (err) {
-            res.status(500).send(err.message)
+
+            res.status(500).send({
+            message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
+            details: err.message,
+            hint: 'Por favor, tente novamente mais tarde ou contate o suporte se o problema persistir.'
+          })
           } else if (!task) {
-            res.status(404).send('Task not found')
+
+            res.status(404).send({
+              message: "Não encontramos uma task com o id de busca inserido!",
+              hint: 'Por favor, revise os dados para realizar a ação.'
+            })
           } else {
+
             res.status(200).json(task)
           }
         })
       } else {
+
         return res.status(400).send({
           message: "Não foi possível buscar a task. Não encontramos o id de busca!",
           hint: 'Por favor, insira o id de busca para realizar a ação.'
@@ -140,6 +174,7 @@ export default class TaskController {
       }
       
     } catch (error) {
+
       return res.status(500).send({
         message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
         details: error,
@@ -159,6 +194,7 @@ export default class TaskController {
       if (req.params.id) {
 
         if (isNaN(id) ) {
+          
           return res.status(400).send({
             message: "Não foi possível buscar a task. O id de busca não é do tipo number!",
             hint: 'Por favor, insira o id de busca do tipo number para realizar a ação.'
@@ -168,20 +204,26 @@ export default class TaskController {
         concludeUseCase.execute(id, (err, task) => {
           if (err) {
 
-            return res.status(500).send(err.message)
+            return res.status(500).send({
+              message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
+              details: err.message,
+              hint: 'Por favor, tente novamente mais tarde ou contate o suporte se o problema persistir.'
+            })
 
           } else if (!task) {
 
             return res.status(404).json({
-              message: "Não foi possível encontrar a task. Não temos uma task com esse id!",
-              hint: 'Por favor, insira um id válido.'
+              message: "Não encontramos uma task com o id de busca inserido!",
+              hint: 'Por favor, revise os dados para realizar a ação.'
             })
           } else {
+
             return res.status(200).json(task)
           }
         })
       }
     } catch (error) {
+
       return res.status(500).send({
         message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
         details: error,
@@ -201,6 +243,7 @@ export default class TaskController {
       if (req.params.id) {
 
         if (isNaN(id) ) {
+
           return res.status(400).send({
             message: "Não foi possível buscar a task. O id de busca não é do tipo number!",
             hint: 'Por favor, insira o id de busca do tipo number para realizar a ação.'
@@ -210,15 +253,20 @@ export default class TaskController {
         activeUseCase.execute(id, (err, task) => {
           if (err) {
 
-            return res.status(500).send(err.message)
+            return res.status(500).send({
+              message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
+              details: err.message,
+              hint: 'Por favor, tente novamente mais tarde ou contate o suporte se o problema persistir.'
+            })
 
           } else if (!task) {
 
             return res.status(404).json({
-              message: "Não foi possível encontrar a task. Não temos uma task com esse id!",
-              hint: 'Por favor, insira um id válido.'
+              message: "Não encontramos uma task com o id de busca inserido!",
+              hint: 'Por favor, revise os dados para realizar a ação.'
             })
           } else {
+
             return res.status(200).json(task)
           }
         })
@@ -243,6 +291,7 @@ export default class TaskController {
       if (req.params.id) {
 
         if (isNaN(id) ) {
+
           return res.status(400).send({
             message: "Não foi possível buscar a task. O id de busca não é do tipo number!",
             hint: 'Por favor, insira o id de busca do tipo number para realizar a ação.'
@@ -252,20 +301,26 @@ export default class TaskController {
         removedUseCase.execute(id, (err, task) => {
           if (err) {
 
-            return res.status(500).send(err.message)
+            return res.status(500).send({
+              message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
+              details: err.message,
+              hint: 'Por favor, tente novamente mais tarde ou contate o suporte se o problema persistir.'
+            })
 
           } else if (!task) {
 
             return res.status(404).json({
-              message: "Não foi possível encontrar a task. Não temos uma task com esse id!",
-              hint: 'Por favor, insira um id válido.'
+              message: "Não encontramos uma task com o id de busca inserido!",
+              hint: 'Por favor, revise os dados para realizar a ação.'
             })
           } else {
+
             return res.status(200).json(task)
           }
         })
       }
     } catch (error) {
+
       return res.status(500).send({
         message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
         details: error,
@@ -286,6 +341,7 @@ export default class TaskController {
       if (req.params.id) {
 
         if (isNaN(id) ) {
+
           return res.status(400).send({
             message: "Não foi possível buscar a task. O id de busca não é do tipo number!",
             hint: 'Por favor, insira o id de busca do tipo number para realizar a ação.'
@@ -294,20 +350,27 @@ export default class TaskController {
 
         deleteTaskUseCase.execute(id, (err, isAproved) => {
           if (err) {
-            res.status(500).send(err.message)
+
+            res.status(500).send({
+              message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
+              details: err.message,
+              hint: 'Por favor, tente novamente mais tarde ou contate o suporte se o problema persistir.'
+            })
           } else if (!isAproved) {
 
             return res.status(404).json({
-              message: "Não foi possível encontrar a task. Não temos uma task com esse id!",
-              hint: 'Por favor, insira um id válido.'
+              message: "Não encontramos uma task com o id de busca inserido!",
+              hint: 'Por favor, revise os dados para realizar a ação.'
             })
 
           } else {
+
             res.status(204).send('Sua task foi deletada!')
           }
         })
       }
     } catch (error) {
+
       return res.status(500).send({
         message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
         details: error,
@@ -322,12 +385,19 @@ export default class TaskController {
     try {
       findAllTasksActiveUseCase.execute((err, tasks) => {
         if (err) {
-          return res.status(500).send(err.message)
+
+          return res.status(500).send({
+              message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
+              details: err.message,
+              hint: 'Por favor, tente novamente mais tarde ou contate o suporte se o problema persistir.'
+            })
         } else {
+
           return res.status(200).json(tasks)
         }
       })
     } catch (error) {
+
       return res.status(500).send({
         message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
         details: error,
@@ -342,12 +412,19 @@ export default class TaskController {
     try {
       findAllTasksConcludedUseCase.execute((err, tasks) => {
         if (err) {
-          return res.status(500).send(err.message)
+
+          return res.status(500).send({
+              message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
+              details: err.message,
+              hint: 'Por favor, tente novamente mais tarde ou contate o suporte se o problema persistir.'
+            })
         } else {
+
           return res.status(200).json(tasks)
         }
       })
     } catch (error) {
+
       return res.status(500).send({
         message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
         details: error,
@@ -362,12 +439,19 @@ export default class TaskController {
     try {
       findAllTasksRemovedUseCase.execute((err, tasks) => {
         if (err) {
-          return res.status(500).send(err.message)
+
+          return res.status(500).send({
+              message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
+              details: err.message,
+              hint: 'Por favor, tente novamente mais tarde ou contate o suporte se o problema persistir.'
+            })
         } else {
+
           return res.status(200).json(tasks)
         }
       })
     } catch (error) {
+
       return res.status(500).send({
         message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
         details: error,
@@ -388,6 +472,7 @@ export default class TaskController {
       if (req.body.id) {
 
         if (isNaN(id) ) {
+
           return res.status(400).send({
             message: "Não foi possível buscar a task. O id de busca não é do tipo number!",
             hint: 'Por favor, insira o id de busca do tipo number para realizar a ação.'
@@ -395,6 +480,7 @@ export default class TaskController {
         }
 
         if (!req.body.title) {
+
           return res.status(400).send({
             message: "Não foi possível atualizar o título da task. O novo título não foi inserido!",
             hint: 'Por favor, insira um novo título para realizar a ação.'
@@ -404,8 +490,11 @@ export default class TaskController {
         updateTaskTitleUseCase.execute(id, title, (err, task) => {
           if (err) {
 
-            return res.status(500).send(err.message)
-
+            return res.status(500).send({
+              message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
+              details: err.message,
+              hint: 'Por favor, tente novamente mais tarde ou contate o suporte se o problema persistir.'
+            })
           } else if (!task) {
 
             return res.status(404).json({
@@ -413,16 +502,19 @@ export default class TaskController {
               hint: 'Por favor, insira um id válido.'
             })
           } else {
+
             return res.status(200).json(task)
           }
         })
       } else {
+
         return res.status(400).send({
           message: "Não foi possível atualizar o título da task. O id da task não foi inserido!",
           hint: 'Por favor, informe o id para realizar a ação.'
         })
       }
     } catch (error) {
+
       return res.status(500).send({
         message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
         details: error,
@@ -443,6 +535,7 @@ export default class TaskController {
       if (req.body.id) {
 
         if (isNaN(id) ) {
+
           return res.status(400).send({
             message: "Não foi possível buscar a task. O id de busca não é do tipo number!",
             hint: 'Por favor, insira o id de busca do tipo number para realizar a ação.'
@@ -450,6 +543,7 @@ export default class TaskController {
         }
 
         if (!req.body.description) {
+
           return res.status(400).send({
             message: "Não foi possível atualizar a descrição da task. A nova descrição não foi inserida!",
             hint: 'Por favor, insira uma nova descrição para realizar a ação.'
@@ -459,7 +553,11 @@ export default class TaskController {
         updateTaskDescriptionUseCase.execute(id, description, (err, task) => {
           if (err) {
 
-            return res.status(500).send(err.message)
+            return res.status(500).send({
+              message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
+              details: err.message,
+              hint: 'Por favor, tente novamente mais tarde ou contate o suporte se o problema persistir.'
+            })
 
           } else if (!task) {
 
@@ -468,16 +566,19 @@ export default class TaskController {
               hint: 'Por favor, insira um id válido.'
             })
           } else {
+
             return res.status(200).json(task)
           }
         })
       } else {
+
         return res.status(400).send({
           message: "Não foi possível atualizar a descrição da task. O id da task não foi inserido!",
           hint: 'Por favor, informe o id para realizar a ação.'
         })
       }
     } catch (error) {
+
       return res.status(500).send({
         message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
         details: error,
@@ -497,6 +598,7 @@ export default class TaskController {
       if (req.params.id) {
 
         if (isNaN(id) ) {
+
           return res.status(400).send({
             message: "Não foi possível buscar a task. O id de busca não é do tipo number!",
             hint: 'Por favor, insira o id de busca do tipo number para realizar a ação.'
@@ -506,7 +608,11 @@ export default class TaskController {
         updateTaskToLowUseCase.execute(id, (err, task) => {
           if (err) {
 
-            return res.status(500).send(err.message)
+            return res.status(500).send({
+              message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
+              details: err.message,
+              hint: 'Por favor, tente novamente mais tarde ou contate o suporte se o problema persistir.'
+            })
 
           } else if (!task) {
 
@@ -515,11 +621,13 @@ export default class TaskController {
               hint: 'Por favor, insira um id válido.'
             })
           } else {
+
             return res.status(200).json(task)
           }
         })
       }
     } catch (error) {
+
       return res.status(500).send({
         message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
         details: error,
@@ -539,6 +647,7 @@ export default class TaskController {
       if (req.params.id) {
 
         if (isNaN(id) ) {
+
           return res.status(400).send({
             message: "Não foi possível buscar a task. O id de busca não é do tipo number!",
             hint: 'Por favor, insira o id de busca do tipo number para realizar a ação.'
@@ -548,7 +657,11 @@ export default class TaskController {
         updateTaskToMediumUseCase.execute(id, (err, task) => {
           if (err) {
 
-            return res.status(500).send(err.message)
+            return res.status(500).send({
+              message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
+              details: err.message,
+              hint: 'Por favor, tente novamente mais tarde ou contate o suporte se o problema persistir.'
+            })
 
           } else if (!task) {
 
@@ -557,11 +670,13 @@ export default class TaskController {
               hint: 'Por favor, insira um id válido.'
             })
           } else {
+
             return res.status(200).json(task)
           }
         })
       }
     } catch (error) {
+
       return res.status(500).send({
         message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
         details: error,
@@ -581,6 +696,7 @@ export default class TaskController {
       if (req.params.id) {
 
         if (isNaN(id) ) {
+
           return res.status(400).send({
             message: "Não foi possível buscar a task. O id de busca não é do tipo number!",
             hint: 'Por favor, insira o id de busca do tipo number para realizar a ação.'
@@ -590,7 +706,11 @@ export default class TaskController {
         updateTaskToHighUseCase.execute(id, (err, task) => {
           if (err) {
 
-            return res.status(500).send(err.message)
+            return res.status(500).send({
+              message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
+              details: err.message,
+              hint: 'Por favor, tente novamente mais tarde ou contate o suporte se o problema persistir.'
+            })
 
           } else if (!task) {
 
@@ -599,11 +719,94 @@ export default class TaskController {
               hint: 'Por favor, insira um id válido.'
             })
           } else {
+
             return res.status(200).json(task)
           }
         })
       }
     } catch (error) {
+
+      return res.status(500).send({
+        message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
+        details: error,
+        hint: 'Por favor, tente novamente mais tarde ou contate o suporte se o problema persistir.'
+      })
+    }
+  }
+
+  async findAllTasksLowHandler(req: Request, res: Response) {
+    const findAllTasksLowUseCase = new FindAllTasksLowUseCase(this.taskRepository)
+
+    try {
+      findAllTasksLowUseCase.execute((err, tasks) => {
+        if (err) {
+
+          return res.status(500).send({
+              message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
+              details: err.message,
+              hint: 'Por favor, tente novamente mais tarde ou contate o suporte se o problema persistir.'
+            })
+        } else {
+
+          return res.status(200).json(tasks)
+        }
+      })
+    } catch (error) {
+
+      return res.status(500).send({
+        message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
+        details: error,
+        hint: 'Por favor, tente novamente mais tarde ou contate o suporte se o problema persistir.'
+      })
+    }
+  }
+
+  async findAllTasksMediumHandler(req: Request, res: Response) {
+    const findAllTasksMediumUseCase = new FindAllTasksMediumUseCase(this.taskRepository)
+
+    try {
+      findAllTasksMediumUseCase.execute((err, tasks) => {
+        if (err) {
+
+          return res.status(500).send({
+              message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
+              details: err.message,
+              hint: 'Por favor, tente novamente mais tarde ou contate o suporte se o problema persistir.'
+            })
+        } else {
+
+          return res.status(200).json(tasks)
+        }
+      })
+    } catch (error) {
+
+      return res.status(500).send({
+        message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
+        details: error,
+        hint: 'Por favor, tente novamente mais tarde ou contate o suporte se o problema persistir.'
+      })
+    }
+  }
+
+  async findAllTasksHighHandler(req: Request, res: Response) {
+    const findAllTasksHighUseCase = new FindAllTasksHighUseCase(this.taskRepository)
+
+    try {
+      findAllTasksHighUseCase.execute((err, tasks) => {
+        if (err) {
+
+          return res.status(500).send({
+              message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
+              details: err.message,
+              hint: 'Por favor, tente novamente mais tarde ou contate o suporte se o problema persistir.'
+            })
+        } else {
+
+          return res.status(200).json(tasks)
+        }
+      })
+    } catch (error) {
+      
       return res.status(500).send({
         message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
         details: error,
