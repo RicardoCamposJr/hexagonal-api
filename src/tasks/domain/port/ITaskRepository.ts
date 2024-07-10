@@ -1,6 +1,6 @@
 import Task from "../entity/Task";
 
-export default interface TaskRepository {
+export default interface ITaskRepository {
   save(task: Task, callback: (err: Error | null, task?: Task) => void): Promise<void>
   findAll(callback: (err: Error | null, tasks?: Task[]) => void): Promise<void>
   findAllTasksActive(callback: (err: Error | null, tasks?: Task[]) => void): Promise<void>

@@ -1,28 +1,29 @@
 import { Request, Response, Router } from "express"
 import Task from "../../domain/entity/Task"
 import TaskRepository from "../../domain/port/ITaskRepository"
-import RegisterTaskUseCase from "../../domain/usecase/registerTaskUseCase"
-import FindAllTasksUseCase from "../../domain/usecase/findAllTasksUseCase"
-import FindByTaskIdTasksUseCase from "../../domain/usecase/findByTaskIdUseCase"
-import DeleteTaskUseCase from "../../domain/usecase/deleteTaskUseCase"
-import UpdateTaskToActiveUseCase from "../../domain/usecase/updateTaskToActiveUseCase"
-import UpdateTaskToRemovedUseCase from "../../domain/usecase/updateTaskToRemovedUseCase"
-import UpdateTaskToConcludedUseCase from "../../domain/usecase/updateTaskToConcludedUseCase"
-import FindAllTasksActiveUseCase from "../../domain/usecase/findAllTasksActiveUseCase"
-import FindAllTasksConcludedUseCase from "../../domain/usecase/findAllTasksConcludedUseCase"
-import FindAllTasksRemovedUseCase from "../../domain/usecase/findAllTasksRemovedUseCase"
-import UpdateTaskTitleUseCase from "../../domain/usecase/updateTaskTitleUseCase"
-import UpdateTaskDescriptionUseCase from "../../domain/usecase/updateTaskDescriptionUseCase"
-import UpdateTaskToLowUseCase from "../../domain/usecase/updateTaskToLowUseCase"
-import UpdateTaskToMediumUseCase from "../../domain/usecase/updateTaskToMediumUseCase"
-import UpdateTaskToHighUseCase from "../../domain/usecase/updateTaskToHighUseCase"
-import FindAllTasksLowUseCase from "../../domain/usecase/findAllTasksLowUseCase"
-import FindAllTasksMediumUseCase from "../../domain/usecase/findAllTasksMediumUseCase"
-import FindAllTasksHighUseCase from "../../domain/usecase/findAllTasksHighUseCase"
+import RegisterTaskUseCase from "../../domain/usecase/tasks/registerTaskUseCase"
+import FindAllTasksUseCase from "../../domain/usecase/tasks/findAllTasksUseCase"
+import FindByTaskIdTasksUseCase from "../../domain/usecase/tasks/findByTaskIdUseCase"
+import DeleteTaskUseCase from "../../domain/usecase/tasks/deleteTaskUseCase"
+import UpdateTaskToActiveUseCase from "../../domain/usecase/tasks/updateTaskToActiveUseCase"
+import UpdateTaskToRemovedUseCase from "../../domain/usecase/tasks/updateTaskToRemovedUseCase"
+import UpdateTaskToConcludedUseCase from "../../domain/usecase/tasks/updateTaskToConcludedUseCase"
+import FindAllTasksActiveUseCase from "../../domain/usecase/tasks/findAllTasksActiveUseCase"
+import FindAllTasksConcludedUseCase from "../../domain/usecase/tasks/findAllTasksConcludedUseCase"
+import FindAllTasksRemovedUseCase from "../../domain/usecase/tasks/findAllTasksRemovedUseCase"
+import UpdateTaskTitleUseCase from "../../domain/usecase/tasks/updateTaskTitleUseCase"
+import UpdateTaskDescriptionUseCase from "../../domain/usecase/tasks/updateTaskDescriptionUseCase"
+import UpdateTaskToLowUseCase from "../../domain/usecase/tasks/updateTaskToLowUseCase"
+import UpdateTaskToMediumUseCase from "../../domain/usecase/tasks/updateTaskToMediumUseCase"
+import UpdateTaskToHighUseCase from "../../domain/usecase/tasks/updateTaskToHighUseCase"
+import FindAllTasksLowUseCase from "../../domain/usecase/tasks/findAllTasksLowUseCase"
+import FindAllTasksMediumUseCase from "../../domain/usecase/tasks/findAllTasksMediumUseCase"
+import FindAllTasksHighUseCase from "../../domain/usecase/tasks/findAllTasksHighUseCase"
+import ITaskRepository from "../../domain/port/ITaskRepository"
 
 
 export default class TaskController {
-  constructor(readonly taskRepository: TaskRepository) {}
+  constructor(readonly taskRepository: ITaskRepository) {}
 
   buildRouter(): Router {
     const router = Router()
