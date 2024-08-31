@@ -7,8 +7,8 @@ export default class TaskRepositoryDB implements TaskRepository {
 
   async save(task: Task, callback: (err: Error | null, task?: Task) => void): Promise<void> {
     const connection = await setupDatabase()
-    const query = `INSERT INTO tasks (title, description, status, priority, createdAt) VALUES (?, ?, ?, ?, ?)`
-    const [result] = await connection.execute(query, [task.title, task.description, task.status, task.priority, task.createdAt])
+    const query = `INSERT INTO tasks (title, description, status, priority, createdAt, user_id) VALUES (?, ?, ?, ?, ?, ?)`
+    const [result] = await connection.execute(query, [task.title, task.description, task.status, task.priority, task.createdAt, task.userId])
     task.id = (result as any).insertId
     callback(null, task)
   }
@@ -17,8 +17,31 @@ export default class TaskRepositoryDB implements TaskRepository {
     const connection = await setupDatabase()
     const query = `SELECT * FROM tasks`
     const [rows] = await connection.execute(query)
-    const tasks = (rows as any[]).map(row => new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt))
+    const tasks = (rows as any[]).map(row => new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt, row.userId))
     callback(null, tasks)
+  }
+
+  async findAllTasksByUserId(userId: number, callback: (err: Error | null, tasks?: Task[] | null) => void): Promise<void> {
+    const connection = await setupDatabase();
+    const query = `SELECT * FROM tasks WHERE user_id = ?`;
+    const [rows] = await connection.execute(query, [userId]);
+
+    if (!rows || (rows as any[]).length === 0) {
+      return callback(null, null);
+    }
+
+    // Mapeia cada linha retornada para uma instância de Task
+    const tasks = (rows as any[]).map(row => new Task(
+      row.id,
+      row.title,
+      row.description,
+      row.status,
+      row.priority,
+      row.createdAt,
+      row.userId
+    ));
+
+    callback(null, tasks);
   }
 
   async findById(id: number, callback: (err: Error | null, task?: Task | null) => void): Promise<void> {
@@ -27,7 +50,7 @@ export default class TaskRepositoryDB implements TaskRepository {
     const [rows] = await connection.execute(query, [id])
     const row = (rows as any[])[0]
     if (!row) return callback(null, null)
-    const task = new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt)
+    const task = new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt, row.userId)
     callback(null, task)
   }
 
@@ -38,7 +61,7 @@ export default class TaskRepositoryDB implements TaskRepository {
     const [rows] = await connection.execute(`SELECT * FROM tasks WHERE id = ?`, [id])
     const row = (rows as any[])[0]
     if (!row) return callback(null, null)
-    const taskReturn = new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt)
+    const taskReturn = new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt, row.userId)
     callback(null, taskReturn)
   }
 
@@ -49,7 +72,7 @@ export default class TaskRepositoryDB implements TaskRepository {
     const [rows] = await connection.execute(`SELECT * FROM tasks WHERE id = ?`, [id])
     const row = (rows as any[])[0]
     if (!row) return callback(null, null)
-    const taskReturn = new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt)
+    const taskReturn = new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt, row.userId)
     callback(null, taskReturn)
   }
 
@@ -60,7 +83,7 @@ export default class TaskRepositoryDB implements TaskRepository {
     const [rows] = await connection.execute(`SELECT * FROM tasks WHERE id = ?`, [id])
     const row = (rows as any[])[0]
     if (!row) return callback(null, null)
-    const taskReturn = new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt)
+    const taskReturn = new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt, row.userId)
     callback(null, taskReturn)
   }
 
@@ -78,7 +101,7 @@ export default class TaskRepositoryDB implements TaskRepository {
     const connection = await setupDatabase()
     const query = `SELECT * FROM tasks WHERE status = "active"`
     const [rows] = await connection.execute(query)
-    const tasks = (rows as any[]).map(row => new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt))
+    const tasks = (rows as any[]).map(row => new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt, row.userId))
     callback(null, tasks)
   }
 
@@ -86,7 +109,7 @@ export default class TaskRepositoryDB implements TaskRepository {
     const connection = await setupDatabase()
     const query = `SELECT * FROM tasks WHERE status = "concluded"`
     const [rows] = await connection.execute(query)
-    const tasks = (rows as any[]).map(row => new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt))
+    const tasks = (rows as any[]).map(row => new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt, row.userId))
     callback(null, tasks)
   }
 
@@ -94,7 +117,7 @@ export default class TaskRepositoryDB implements TaskRepository {
     const connection = await setupDatabase()
     const query = `SELECT * FROM tasks WHERE status = "removed"`
     const [rows] = await connection.execute(query)
-    const tasks = (rows as any[]).map(row => new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt))
+    const tasks = (rows as any[]).map(row => new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt, row.userId))
     callback(null, tasks)
   }
 
@@ -105,7 +128,7 @@ export default class TaskRepositoryDB implements TaskRepository {
     const [rows] = await connection.execute(`SELECT * FROM tasks WHERE id = ?`, [id])
     const row = (rows as any[])[0]
     if (!row) return callback(null, null)
-    const taskReturn = new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt)
+    const taskReturn = new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt, row.userId)
     callback(null, taskReturn)
   }
 
@@ -116,7 +139,7 @@ export default class TaskRepositoryDB implements TaskRepository {
     const [rows] = await connection.execute(`SELECT * FROM tasks WHERE id = ?`, [id])
     const row = (rows as any[])[0]
     if (!row) return callback(null, null)
-    const taskReturn = new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt)
+    const taskReturn = new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt, row.userId)
     callback(null, taskReturn)
   }
 
@@ -127,7 +150,7 @@ export default class TaskRepositoryDB implements TaskRepository {
     const [rows] = await connection.execute(`SELECT * FROM tasks WHERE id = ?`, [id])
     const row = (rows as any[])[0]
     if (!row) return callback(null, null)
-    const taskReturn = new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt)
+    const taskReturn = new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt, row.userId)
     callback(null, taskReturn)
   }
 
@@ -138,7 +161,7 @@ export default class TaskRepositoryDB implements TaskRepository {
     const [rows] = await connection.execute(`SELECT * FROM tasks WHERE id = ?`, [id])
     const row = (rows as any[])[0]
     if (!row) return callback(null, null)
-    const taskReturn = new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt)
+    const taskReturn = new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt, row.userId)
     callback(null, taskReturn)
   }
 
@@ -149,7 +172,7 @@ export default class TaskRepositoryDB implements TaskRepository {
     const [rows] = await connection.execute(`SELECT * FROM tasks WHERE id = ?`, [id])
     const row = (rows as any[])[0]
     if (!row) return callback(null, null)
-    const taskReturn = new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt)
+    const taskReturn = new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt, row.userId)
     callback(null, taskReturn)
   }
 
@@ -157,7 +180,7 @@ export default class TaskRepositoryDB implements TaskRepository {
     const connection = await setupDatabase()
     const query = `SELECT * FROM tasks WHERE priority = "low"`
     const [rows] = await connection.execute(query)
-    const tasks = (rows as any[]).map(row => new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt))
+    const tasks = (rows as any[]).map(row => new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt, row.userId))
     callback(null, tasks)
   }
 
@@ -165,7 +188,7 @@ export default class TaskRepositoryDB implements TaskRepository {
     const connection = await setupDatabase()
     const query = `SELECT * FROM tasks WHERE priority = "medium"`
     const [rows] = await connection.execute(query)
-    const tasks = (rows as any[]).map(row => new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt))
+    const tasks = (rows as any[]).map(row => new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt, row.userId))
     callback(null, tasks)
   }
 
@@ -173,7 +196,7 @@ export default class TaskRepositoryDB implements TaskRepository {
     const connection = await setupDatabase()
     const query = `SELECT * FROM tasks WHERE priority = "high"`
     const [rows] = await connection.execute(query)
-    const tasks = (rows as any[]).map(row => new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt))
+    const tasks = (rows as any[]).map(row => new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt, row.userId))
     callback(null, tasks)
   }
 }

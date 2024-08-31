@@ -8,6 +8,7 @@ export default class Task {
     public description: string,
     public status: TStatus | null,
     public priority: TPriority | null,
-    public createdAt: string | null
+    public createdAt: string | null,
+    public userId: number | null
   ) {}
 }

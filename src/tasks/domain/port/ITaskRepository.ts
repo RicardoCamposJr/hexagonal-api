@@ -19,4 +19,5 @@ export default interface ITaskRepository {
   findAllTasksLow(callback: (err: Error | null, tasks?: Task[]) => void): Promise<void>
   findAllTasksMedium(callback: (err: Error | null, tasks?: Task[]) => void): Promise<void>
   findAllTasksHigh(callback: (err: Error | null, tasks?: Task[]) => void): Promise<void>
+  findAllTasksByUserId(userId: number, callback: (err: Error | null, tasks?: Task[] | null) => void): Promise<void>
 }

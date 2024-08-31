@@ -20,6 +20,7 @@ import FindAllTasksLowUseCase from "../../domain/usecase/tasks/findAllTasksLowUs
 import FindAllTasksMediumUseCase from "../../domain/usecase/tasks/findAllTasksMediumUseCase"
 import FindAllTasksHighUseCase from "../../domain/usecase/tasks/findAllTasksHighUseCase"
 import ITaskRepository from "../../domain/port/ITaskRepository"
+import FindAllTasksByUserIdUseCase from "../../domain/usecase/tasks/findAllTasksByUserId"
 
 
 export default class TaskController {
@@ -29,6 +30,7 @@ export default class TaskController {
     const router = Router()
     router.post("/", this.registerTaskHandler.bind(this))
     router.get("/", this.findAllTasksHandler.bind(this))
+    router.get("/:userId", this.findAllTasksByUserIdHandler.bind(this))
     router.get("/active", this.findAllTasksActiveHandler.bind(this))
     router.get("/concluded", this.findAllTasksConcludedHandler.bind(this))
     router.get("/removed", this.findAllTasksRemovedHandler.bind(this))
@@ -56,7 +58,7 @@ export default class TaskController {
       const now = new Date()
       const isoDate = now.toISOString()
 
-      const { title, description, priority } = req.body
+      const { title, description, priority, userId } = req.body
 
       if (!title) {
 
@@ -78,7 +80,7 @@ export default class TaskController {
         })
       }
 
-      const task = new Task(null, title, description, 'active', priority, isoDate)
+      const task = new Task(null, title, description, 'active', priority, isoDate, userId)
 
       registerTaskUseCase.execute(task, (err, task) => {
         if (err) {
@@ -126,6 +128,38 @@ export default class TaskController {
         details: error,
         hint: 'Por favor, tente novamente mais tarde ou contate o suporte se o problema persistir.'
       })
+    }
+  }
+
+  async findAllTasksByUserIdHandler(req: Request, res: Response) {
+    const { userId } = req.params;
+    const findAllTasksByUserIdUseCase = new FindAllTasksByUserIdUseCase(this.taskRepository);
+  
+    try {
+      findAllTasksByUserIdUseCase.execute(Number(userId), (err, tasks) => {
+        if (err) {
+          return res.status(500).send({
+            message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
+            details: err.message,
+            hint: 'Por favor, tente novamente mais tarde ou contate o suporte se o problema persistir.'
+          });
+        }
+  
+        if (!tasks || tasks.length === 0) {
+          return res.status(404).send({
+            message: "Nenhuma tarefa encontrada para o usuário especificado.",
+            hint: 'Verifique o ID do usuário e tente novamente.'
+          });
+        }
+  
+        return res.status(200).json(tasks);
+      });
+    } catch (error) {
+      return res.status(500).send({
+        message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
+        details: error,
+        hint: 'Por favor, tente novamente mais tarde ou contate o suporte se o problema persistir.'
+      });
     }
   }
 
