@@ -1,11 +1,14 @@
-import mysql from 'mysql2/promise';
+import mysql from 'mysql2/promise'
+import dotenv from 'dotenv'
+
+dotenv.config({path: './.env'})
 
 async function setupDatabase() {
   const connection = await mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'Supercombo0*',
-    database: 'tasks_db2'
+    host: process.env.DATABASE_HOST,
+    user: process.env.DATABASE_USER,
+    password: process.env.DATABASE_PASSWORD,
+    database: process.env.DATABASE_NAME
   })
 
   await connection.query(`CREATE TABLE IF NOT EXISTS users (
