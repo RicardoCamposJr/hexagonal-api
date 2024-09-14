@@ -47,6 +47,14 @@ export default class UserController {
       registerUserUseCase.execute(user, (err, user) => {
         if (err) {
 
+          if (err.name == 'Already in use') {
+            return res.status(400).send({
+              message: "Não foi possível criar o usuário. O email já está em uso!",
+              details: err.message,
+              hint: 'Por favor, insira um novo email.'
+            })
+          }
+
           return res.status(500).send({
             message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
             details: err.message,

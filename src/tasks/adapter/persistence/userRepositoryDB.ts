@@ -7,6 +7,14 @@ export default class UserRepositoryDB implements IUserRepository {
 
   async save(user: User, callback: (err: Error | null, user?: User) => void): Promise<void> {
     const connection = await setupDatabase();
+    
+    const verify = `SELECT * FROM users WHERE email = ?`;
+    const [rows] = await connection.execute(verify, [user.email]) as any // Retorna um array de objetos com os registros;
+    
+    const isEmailAlreadyInUse = rows.some((register: any) => register.email == user.email)
+    
+    if (isEmailAlreadyInUse) return callback({message: 'O email já está em uso', name: 'Already in use'}, undefined)
+    
     const query = `INSERT INTO users (username, password, email) VALUES (?, ?, ?)`;
     const [result] = await connection.execute(query, [user.username, user.password, user.email]);
     user.id = (result as any).insertId;
