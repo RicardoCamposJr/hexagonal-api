@@ -2,11 +2,13 @@ import { Request, Response, Router } from "express"
 import UserRepositoryDB from "../../adapter/persistence/userRepositoryDB"
 import User from "../../domain/entity/User"
 import RegisterUserUseCase from "../../domain/usecase/users/registerUserUseCase"
-
-
+import { PasswordEncryption } from "../../adapter/encryption/passwordEncryption"
 
 export default class UserController {
   constructor(readonly userRepository: UserRepositoryDB) {}
+
+  // Classe de encriptação de senha (Adapter):
+  private passwordEncryptor: PasswordEncryption = new PasswordEncryption()
 
   buildRouter(): Router {
     const router = Router()
@@ -42,7 +44,10 @@ export default class UserController {
         })
       }
 
-      const user = new User(null, username, password, email)
+      // Encriptando a senha:
+      const hashedPassword = await this.passwordEncryptor.encrypt(password)
+
+      const user = new User(null, username, hashedPassword, email)
 
       registerUserUseCase.execute(user, (err, user) => {
         if (err) {
