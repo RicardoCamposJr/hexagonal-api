@@ -1,5 +1,5 @@
 import { compare, hash } from "bcrypt";
-import { IPasswordEncryption } from "../../domain/port/IPasswordEncryption";
+import { IPasswordEncryption } from "../../domain/port/encription/IPasswordEncryption";
 
 export class PasswordEncryption implements IPasswordEncryption {
 

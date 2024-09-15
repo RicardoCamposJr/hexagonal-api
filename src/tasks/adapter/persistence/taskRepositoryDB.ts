@@ -1,8 +1,8 @@
 import Task from "../../domain/entity/Task"
-import TaskRepository from "../../domain/port/ITaskRepository"
+import ITaskRepository from "../../domain/port/repository/ITaskRepository"
 import setupDatabase from "./db"
 
-export default class TaskRepositoryDB implements TaskRepository {
+export default class TaskRepositoryDB implements ITaskRepository {
 
 
   async save(task: Task, callback: (err: Error | null, task?: Task) => void): Promise<void> {

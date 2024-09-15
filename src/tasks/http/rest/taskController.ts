@@ -1,6 +1,5 @@
 import { Request, Response, Router } from "express"
 import Task from "../../domain/entity/Task"
-import TaskRepository from "../../domain/port/ITaskRepository"
 import RegisterTaskUseCase from "../../domain/usecase/tasks/registerTaskUseCase"
 import FindAllTasksUseCase from "../../domain/usecase/tasks/findAllTasksUseCase"
 import FindByTaskIdTasksUseCase from "../../domain/usecase/tasks/findByTaskIdUseCase"
@@ -19,8 +18,8 @@ import UpdateTaskToHighUseCase from "../../domain/usecase/tasks/updateTaskToHigh
 import FindAllTasksLowUseCase from "../../domain/usecase/tasks/findAllTasksLowUseCase"
 import FindAllTasksMediumUseCase from "../../domain/usecase/tasks/findAllTasksMediumUseCase"
 import FindAllTasksHighUseCase from "../../domain/usecase/tasks/findAllTasksHighUseCase"
-import ITaskRepository from "../../domain/port/ITaskRepository"
 import FindAllTasksByUserIdUseCase from "../../domain/usecase/tasks/findAllTasksByUserId"
+import ITaskRepository from "../../domain/port/repository/ITaskRepository"
 
 
 export default class TaskController {

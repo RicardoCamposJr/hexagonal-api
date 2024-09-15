@@ -1,5 +1,5 @@
 import User from "../../entity/User"
-import IUserRepository from "../../port/IUserRepository"
+import IUserRepository from "../../port/repository/IUserRepository"
 
 export default class RegisterUserUseCase {
   constructor(readonly userRepository: IUserRepository) {}

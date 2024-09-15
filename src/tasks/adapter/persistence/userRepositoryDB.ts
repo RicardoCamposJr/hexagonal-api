@@ -1,7 +1,7 @@
 // infrastructure/repository/UserRepositoryDB.ts
-import User from "../../domain/entity/User";
-import IUserRepository from "../../domain/port/IUserRepository";
-import setupDatabase from "./db";
+import User from "../../domain/entity/User"
+import IUserRepository from "../../domain/port/repository/IUserRepository";
+import setupDatabase from "./db"
 
 export default class UserRepositoryDB implements IUserRepository {
 

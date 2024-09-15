@@ -1,5 +1,5 @@
 import Task from "../../entity/Task"
-import ITaskRepository from "../../port/ITaskRepository"
+import ITaskRepository from "../../port/repository/ITaskRepository"
 
 export default class FindAllTasksByUserIdUseCase {
   constructor(readonly taskRepository: ITaskRepository) {}
