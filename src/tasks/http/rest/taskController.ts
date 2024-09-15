@@ -78,12 +78,26 @@ export default class TaskController {
           message: "Não foi possível criar a task. A descrição não foi encontrada!",
           hint: 'Por favor, insira uma descrição para a task!'
         })
+      } else if (!userId) {
+
+        return res.status(400).send({
+          message: "Não foi possível criar a task. O id do usuário não foi encontrado!",
+          hint: 'Por favor, insira um id de usuário válido para a task!'
+        })
       }
 
       const task = new Task(null, title, description, 'active', priority, isoDate, userId)
 
       registerTaskUseCase.execute(task, (err, task) => {
         if (err) {
+
+          if (err.name == 'User not found') {
+            return res.status(400).send({
+              message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
+              details: err.message,
+              hint: 'Por favor, insira um id de usuário válido.'
+            })
+          }
 
           return res.status(500).send({
             message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",

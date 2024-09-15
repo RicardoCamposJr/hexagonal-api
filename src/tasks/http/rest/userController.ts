@@ -48,7 +48,7 @@ export default class UserController {
         if (err) {
 
           if (err.name == 'Already in use') {
-            return res.status(400).send({
+            return res.status(409).send({
               message: "Não foi possível criar o usuário. O email já está em uso!",
               details: err.message,
               hint: 'Por favor, insira um novo email.'

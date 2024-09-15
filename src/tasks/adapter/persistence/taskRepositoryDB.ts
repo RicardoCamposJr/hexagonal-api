@@ -7,9 +7,15 @@ export default class TaskRepositoryDB implements TaskRepository {
 
   async save(task: Task, callback: (err: Error | null, task?: Task) => void): Promise<void> {
     const connection = await setupDatabase()
+
+    const validationUserIdQuery = `SELECT * FROM users WHERE id = ?`
+    const [rows] = await connection.execute(validationUserIdQuery, [task.userId]) as any as Array<[]> // Retorna um array de objetos com registros.
+    if (rows.length == 0) return callback({name: 'User not found', message: 'Usuário não foi encontrado!'})
+    
     const query = `INSERT INTO tasks (title, description, status, priority, createdAt, user_id) VALUES (?, ?, ?, ?, ?, ?)`
     const [result] = await connection.execute(query, [task.title, task.description, task.status, task.priority, task.createdAt, task.userId])
     task.id = (result as any).insertId
+    
     callback(null, task)
   }
 
