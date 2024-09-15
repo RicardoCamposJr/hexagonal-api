@@ -59,4 +59,18 @@ export default class UserRepositoryDB implements IUserRepository {
     await connection.execute(query, [id]);
     callback(null, true);
   }
+
+  async getPassword(email: string, callback: (err: Error | null, user?: User) => void): Promise<void> {
+    const connection = await setupDatabase();
+    
+    const [rows] = await connection.execute(`SELECT * FROM users WHERE email = ?`, [email])
+    
+    if ((rows as any[]).length == 0) return callback(
+      { 
+        message: 'O usuário não existe no sistema.', 
+        name: 'User not found'
+      })
+    
+    return callback(null, (rows as any[])[0] as User)
+  }
 }
