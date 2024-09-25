@@ -29,12 +29,12 @@ export default class TaskController {
   buildRouter(): Router {
     const router = Router();
     router.post("/", jwtAuthMiddleware, this.registerTaskHandler.bind(this));
-    router.get("/", jwtAuthMiddleware, this.findAllTasksHandler.bind(this));
     router.get(
-      "/:userId",
+      "/",
       jwtAuthMiddleware,
       this.findAllTasksByUserIdHandler.bind(this)
     );
+    router.get("/:id", jwtAuthMiddleware, this.findByTaskIdHandler.bind(this));
     router.get(
       "/active",
       jwtAuthMiddleware,
@@ -75,7 +75,6 @@ export default class TaskController {
       jwtAuthMiddleware,
       this.updateTaskDescriptionHandler.bind(this)
     );
-    router.get("/:id", jwtAuthMiddleware, this.findByTaskIdHandler.bind(this));
     router.patch(
       "/:id/conclude",
       jwtAuthMiddleware,
@@ -215,31 +214,33 @@ export default class TaskController {
   }
 
   async findAllTasksByUserIdHandler(req: IAuthenticatedRequest, res: Response) {
-    const { userId } = req.params;
     const findAllTasksByUserIdUseCase = new FindAllTasksByUserIdUseCase(
       this.taskRepository
     );
 
     try {
-      findAllTasksByUserIdUseCase.execute(Number(userId), (err, tasks) => {
-        if (err) {
-          return res.status(500).send({
-            message:
-              "Um erro interno ocorreu. Não foi possível realizar essa ação.",
-            details: err.message,
-            hint: "Por favor, tente novamente mais tarde ou contate o suporte se o problema persistir.",
-          });
-        }
+      findAllTasksByUserIdUseCase.execute(
+        Number(req.user?.id),
+        (err, tasks) => {
+          if (err) {
+            return res.status(500).send({
+              message:
+                "Um erro interno ocorreu. Não foi possível realizar essa ação.",
+              details: err.message,
+              hint: "Por favor, tente novamente mais tarde ou contate o suporte se o problema persistir.",
+            });
+          }
 
-        if (!tasks || tasks.length === 0) {
-          return res.status(404).send({
-            message: "Nenhuma tarefa encontrada para o usuário especificado.",
-            hint: "Verifique o ID do usuário e tente novamente.",
-          });
-        }
+          if (!tasks || tasks.length === 0) {
+            return res.status(404).send({
+              message: "Nenhuma tarefa encontrada para o usuário especificado.",
+              hint: "Verifique o ID do usuário e tente novamente.",
+            });
+          }
 
-        return res.status(200).json(tasks);
-      });
+          return res.status(200).json(tasks);
+        }
+      );
     } catch (error) {
       return res.status(500).send({
         message:
@@ -269,7 +270,7 @@ export default class TaskController {
           });
         }
 
-        findByTaskIdUseCase.execute(id, (err, task) => {
+        findByTaskIdUseCase.execute(id, req.user?.id as number, (err, task) => {
           if (err) {
             res.status(500).send({
               message:

@@ -84,12 +84,13 @@ export default class TaskRepositoryDB implements ITaskRepository {
   }
 
   async findById(
-    id: number,
+    taskId: number,
+    userId: number,
     callback: (err: Error | null, task?: Task | null) => void
   ): Promise<void> {
     const connection = await setupDatabase();
-    const query = `SELECT * FROM tasks WHERE id = ?`;
-    const [rows] = await connection.execute(query, [id]);
+    const query = `SELECT * FROM tasks WHERE id = ? AND user_id = ?`;
+    const [rows] = await connection.execute(query, [taskId, userId]);
     const row = (rows as any[])[0];
     if (!row) return callback(null, null);
     const task = new Task(
