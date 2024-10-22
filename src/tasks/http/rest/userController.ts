@@ -126,7 +126,7 @@ export default class UserController {
               return res.json({ auth: true, access_token: token });
             } else {
               return res.status(400).send({
-                message: "Não foi possível efetuar o login. Senha incorreta 1",
+                message: "Não foi possível efetuar o login. Senha incorreta.",
                 details: "Senha incorreta.",
                 hint: "Por favor, insira uma senha válida.",
               });
@@ -134,9 +134,10 @@ export default class UserController {
           })
           .catch((err) => {
             return res.status(400).send({
-              message: "Não foi possível efetuar o login. Senha incorreta 2",
-              details: "Senha incorreta.",
-              hint: "Por favor, insira uma senha válida.",
+              message:
+                "Um erro interno ocorreu. Não foi possível realizar essa ação.",
+              details: err,
+              hint: "Por favor, tente novamente mais tarde ou contate o suporte se o problema persistir.",
             });
           });
       });

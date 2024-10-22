@@ -3,11 +3,12 @@
 import jwt from "jsonwebtoken";
 import { IAuthToken } from "../../domain/port/authToken/IAuthToken";
 import { configDotenv } from "dotenv";
+import { TPayload } from "../../../types/Payload/TPayload";
 
 configDotenv({ path: "./.env" });
 
 export class JwtAuthTokenService implements IAuthToken {
-  generateToken(payload: any): string {
+  generateToken(payload: TPayload): string {
     return jwt.sign(payload, process.env.SECRET_KEY as string, {
       expiresIn: 3600,
     });

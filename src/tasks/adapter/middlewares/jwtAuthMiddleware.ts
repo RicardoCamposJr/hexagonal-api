@@ -1,6 +1,7 @@
 import { NextFunction, Response } from "express";
 import { JwtAuthTokenService } from "../jwt/JwtAuthService";
 import { IAuthenticatedRequest } from "./interfaces/IAutenticatedRequest";
+import { TPayload } from "../../../types/Payload/TPayload";
 
 // Esse middleware é responável por verificar se o access token do usuário está presente,
 // válido ou inválido. Assim, ele é posto nas rotas para haver essa validação antes da rota ser
@@ -21,8 +22,8 @@ export const jwtAuthMiddleware = (
   }
 
   try {
-    const user = jwtTokenService.verifyToken(token);
-    req.user = { id: user.userId };
+    const user: TPayload = jwtTokenService.verifyToken(token);
+    req.user = { id: user.userId as number };
     next();
   } catch (error) {
     return res.status(403).json({ message: "Token inválido ou expirado!" });
