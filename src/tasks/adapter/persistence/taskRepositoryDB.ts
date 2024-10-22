@@ -106,18 +106,26 @@ export default class TaskRepositoryDB implements ITaskRepository {
   }
 
   async updateTaskToConcluded(
-    id: number,
+    taskId: number,
+    userId: number,
     callback: (err: Error | null, task?: Task | null) => void
   ): Promise<void> {
     const connection = await setupDatabase();
-    const query = `UPDATE tasks SET status = ? WHERE id = ?`;
-    await connection.execute(query, ["concluded", id]);
-    const [rows] = await connection.execute(
-      `SELECT * FROM tasks WHERE id = ?`,
-      [id]
+
+    await connection.execute(
+      `UPDATE tasks SET status = ? WHERE id = ? AND user_id = ?`,
+      ["concluded", taskId, userId]
     );
+
+    const [rows] = await connection.execute(
+      `SELECT * FROM tasks WHERE id = ? AND user_id = ?`,
+      [taskId, userId]
+    );
+
     const row = (rows as any[])[0];
+
     if (!row) return callback(null, null);
+
     const taskReturn = new Task(
       row.id,
       row.title,
@@ -125,8 +133,9 @@ export default class TaskRepositoryDB implements ITaskRepository {
       row.status,
       row.priority,
       row.createdAt,
-      row.userId
+      row.user_id
     );
+
     callback(null, taskReturn);
   }
 

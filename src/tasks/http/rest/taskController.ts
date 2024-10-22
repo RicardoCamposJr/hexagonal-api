@@ -313,12 +313,12 @@ export default class TaskController {
     );
 
     try {
-      let id;
+      let taskId;
 
-      id = parseInt(req.params.id, 10);
+      taskId = parseInt(req.params.id, 10);
 
       if (req.params.id) {
-        if (isNaN(id)) {
+        if (isNaN(taskId)) {
           return res.status(400).send({
             message:
               "Não foi possível buscar a task. O id de busca não é do tipo number!",
@@ -326,7 +326,7 @@ export default class TaskController {
           });
         }
 
-        concludeUseCase.execute(id, (err, task) => {
+        concludeUseCase.execute(taskId, req.user?.id as number, (err, task) => {
           if (err) {
             return res.status(500).send({
               message:
@@ -353,6 +353,8 @@ export default class TaskController {
       });
     }
   }
+
+  // PAREI AQUI, CONTINUE COLOCANDO O ID DO USUÁRIO NAS FUNÇÕES ABAIXO!!!
 
   async updateTaskToActiveHandler(req: IAuthenticatedRequest, res: Response) {
     const activeUseCase = new UpdateTaskToActiveUseCase(this.taskRepository);

@@ -21,7 +21,8 @@ export default interface ITaskRepository {
     callback: (err: Error | null, task?: Task | null) => void
   ): Promise<void>;
   updateTaskToConcluded(
-    id: number,
+    taskId: number,
+    userId: number,
     callback: (err: Error | null, task?: Task | null) => void
   ): Promise<void>;
   updateTaskToActive(
