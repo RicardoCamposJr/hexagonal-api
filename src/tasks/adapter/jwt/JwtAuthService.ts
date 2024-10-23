@@ -8,17 +8,17 @@ import { TPayload } from "../../../types/Payload/TPayload";
 configDotenv({ path: "./.env" });
 
 export class JwtAuthTokenService implements IAuthToken {
-  generateToken(payload: TPayload): string {
-    return jwt.sign(payload, process.env.SECRET_KEY as string, {
-      expiresIn: 3600,
-    });
-  }
+	generateToken(payload: TPayload): string {
+		return jwt.sign(payload, process.env.SECRET_KEY as string, {
+			expiresIn: 3600,
+		});
+	}
 
-  verifyToken(token: string): any {
-    try {
-      return jwt.verify(token, process.env.SECRET_KEY as string);
-    } catch (error) {
-      throw new Error("Invalid token");
-    }
-  }
+	verifyToken(token: string): any {
+		try {
+			return jwt.verify(token, process.env.SECRET_KEY as string);
+		} catch (error) {
+			throw new Error("Invalid token");
+		}
+	}
 }

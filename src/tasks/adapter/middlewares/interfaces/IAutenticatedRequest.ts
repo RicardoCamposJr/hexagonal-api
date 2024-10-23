@@ -5,7 +5,7 @@ import { Request } from "express";
 // Podendo capturar a informação por {req.user.id}, por exemplo.
 
 export interface IAuthenticatedRequest extends Request {
-  user?: {
-    id: number;
-  };
+	user?: {
+		id: number;
+	};
 }

@@ -1,79 +1,23 @@
-import Task from "../../entity/Task";
+import type Task from "../../entity/Task";
 
 export default interface ITaskRepository {
-  save(
-    task: Task,
-    callback: (err: Error | null, task?: Task) => void
-  ): Promise<void>;
-  findAll(callback: (err: Error | null, tasks?: Task[]) => void): Promise<void>;
-  findAllTasksActive(
-    userId: number,
-    callback: (err: Error | null, tasks?: Task[]) => void
-  ): Promise<void>;
-  findAllTasksConcluded(
-    callback: (err: Error | null, tasks?: Task[]) => void
-  ): Promise<void>;
-  findAllTasksRemoved(
-    callback: (err: Error | null, tasks?: Task[]) => void
-  ): Promise<void>;
-  findById(
-    taskId: number,
-    userId: number,
-    callback: (err: Error | null, task?: Task | null) => void
-  ): Promise<void>;
-  updateTaskToConcluded(
-    taskId: number,
-    userId: number,
-    callback: (err: Error | null, task?: Task | null) => void
-  ): Promise<void>;
-  updateTaskToActive(
-    taskId: number,
-    userId: number,
-    callback: (err: Error | null, task?: Task | null) => void
-  ): Promise<void>;
-  updateTaskToRemoved(
-    taskId: number,
-    userId: number,
-    callback: (err: Error | null, task?: Task | null) => void
-  ): Promise<void>;
-  delete(
-    taskId: number,
-    userId: number,
-    callback: (err: Error | null, isAproved?: boolean) => void
-  ): Promise<void>;
-  updateTaskTitle(
-    id: number,
-    title: string,
-    callback: (err: Error | null, task?: Task | null) => void
-  ): Promise<void>;
-  updateTaskDescription(
-    id: number,
-    description: string,
-    callback: (err: Error | null, task?: Task | null) => void
-  ): Promise<void>;
-  updateTaskToLow(
-    id: number,
-    callback: (err: Error | null, task?: Task | null) => void
-  ): Promise<void>;
-  updateTaskToMedium(
-    id: number,
-    callback: (err: Error | null, task?: Task | null) => void
-  ): Promise<void>;
-  updateTaskToHigh(
-    id: number,
-    callback: (err: Error | null, task?: Task | null) => void
-  ): Promise<void>;
-  findAllTasksLow(
-    callback: (err: Error | null, tasks?: Task[]) => void
-  ): Promise<void>;
-  findAllTasksMedium(
-    callback: (err: Error | null, tasks?: Task[]) => void
-  ): Promise<void>;
-  findAllTasksHigh(
-    callback: (err: Error | null, tasks?: Task[]) => void
-  ): Promise<void>;
-  findAllTasksByUserId(
-    userId: number,
-    callback: (err: Error | null, tasks?: Task[] | null) => void
-  ): Promise<void>;
+	save(task: Task, callback: (err: Error | null, task?: Task) => void): Promise<void>;
+	findAll(callback: (err: Error | null, tasks?: Task[]) => void): Promise<void>;
+	findAllTasksActive(userId: number, callback: (err: Error | null, tasks?: Task[]) => void): Promise<void>;
+	findAllTasksConcluded(userId: number, callback: (err: Error | null, tasks?: Task[]) => void): Promise<void>;
+	findAllTasksRemoved(userId: number, callback: (err: Error | null, tasks?: Task[]) => void): Promise<void>;
+	findById(taskId: number, userId: number, callback: (err: Error | null, task?: Task | null) => void): Promise<void>;
+	updateTaskToConcluded(taskId: number, userId: number, callback: (err: Error | null, task?: Task | null) => void): Promise<void>;
+	updateTaskToActive(taskId: number, userId: number, callback: (err: Error | null, task?: Task | null) => void): Promise<void>;
+	updateTaskToRemoved(taskId: number, userId: number, callback: (err: Error | null, task?: Task | null) => void): Promise<void>;
+	delete(taskId: number, userId: number, callback: (err: Error | null, isAproved?: boolean) => void): Promise<void>;
+	updateTaskTitle(id: number, title: string, callback: (err: Error | null, task?: Task | null) => void): Promise<void>;
+	updateTaskDescription(id: number, description: string, callback: (err: Error | null, task?: Task | null) => void): Promise<void>;
+	updateTaskToLow(id: number, callback: (err: Error | null, task?: Task | null) => void): Promise<void>;
+	updateTaskToMedium(id: number, callback: (err: Error | null, task?: Task | null) => void): Promise<void>;
+	updateTaskToHigh(id: number, callback: (err: Error | null, task?: Task | null) => void): Promise<void>;
+	findAllTasksLow(callback: (err: Error | null, tasks?: Task[]) => void): Promise<void>;
+	findAllTasksMedium(callback: (err: Error | null, tasks?: Task[]) => void): Promise<void>;
+	findAllTasksHigh(callback: (err: Error | null, tasks?: Task[]) => void): Promise<void>;
+	findAllTasksByUserId(userId: number, callback: (err: Error | null, tasks?: Task[] | null) => void): Promise<void>;
 }

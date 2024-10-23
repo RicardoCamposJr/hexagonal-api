@@ -8,24 +8,24 @@ import { TPayload } from "../../../types/Payload/TPayload";
 // acessada.
 
 export const jwtAuthMiddleware = (
-  req: IAuthenticatedRequest,
-  res: Response,
-  // O parâmetro "next" é do express, indicando o seguimento do funcionamento da rota.
-  next: NextFunction
+	req: IAuthenticatedRequest,
+	res: Response,
+	// O parâmetro "next" é do express, indicando o seguimento do funcionamento da rota.
+	next: NextFunction,
 ) => {
-  const jwtTokenService = new JwtAuthTokenService();
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
+	const jwtTokenService = new JwtAuthTokenService();
+	const authHeader = req.headers["authorization"];
+	const token = authHeader && authHeader.split(" ")[1];
 
-  if (!token) {
-    return res.status(401).json({ message: "Token não encontrado!" });
-  }
+	if (!token) {
+		return res.status(401).json({ message: "Token não encontrado!" });
+	}
 
-  try {
-    const user: TPayload = jwtTokenService.verifyToken(token);
-    req.user = { id: user.userId as number };
-    next();
-  } catch (error) {
-    return res.status(403).json({ message: "Token inválido ou expirado!" });
-  }
+	try {
+		const user: TPayload = jwtTokenService.verifyToken(token);
+		req.user = { id: user.userId as number };
+		next();
+	} catch (error) {
+		return res.status(403).json({ message: "Token inválido ou expirado!" });
+	}
 };
