@@ -470,6 +470,8 @@ export default class TaskController {
 		}
 	}
 
+	// PAREI AQUI, CONTINUE ABAIXO...
+
 	async updateTaskTitleHandler(req: IAuthenticatedRequest, res: Response) {
 		const updateTaskTitleUseCase = new UpdateTaskTitleUseCase(this.taskRepository);
 
