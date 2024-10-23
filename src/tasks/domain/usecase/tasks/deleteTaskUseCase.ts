@@ -5,9 +5,10 @@ export default class DeleteTaskUseCase {
   constructor(readonly taskRepository: ITaskRepository) {}
 
   async execute(
-    id: number,
+    taskId: number,
+    userId: number,
     callback: (err: Error | null, isAproved?: boolean) => void
   ): Promise<void> {
-    await this.taskRepository.delete(id, callback);
+    await this.taskRepository.delete(taskId, userId, callback);
   }
 }

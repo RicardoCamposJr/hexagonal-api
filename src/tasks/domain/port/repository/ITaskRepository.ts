@@ -7,6 +7,7 @@ export default interface ITaskRepository {
   ): Promise<void>;
   findAll(callback: (err: Error | null, tasks?: Task[]) => void): Promise<void>;
   findAllTasksActive(
+    userId: number,
     callback: (err: Error | null, tasks?: Task[]) => void
   ): Promise<void>;
   findAllTasksConcluded(
@@ -26,15 +27,18 @@ export default interface ITaskRepository {
     callback: (err: Error | null, task?: Task | null) => void
   ): Promise<void>;
   updateTaskToActive(
-    id: number,
+    taskId: number,
+    userId: number,
     callback: (err: Error | null, task?: Task | null) => void
   ): Promise<void>;
   updateTaskToRemoved(
-    id: number,
+    taskId: number,
+    userId: number,
     callback: (err: Error | null, task?: Task | null) => void
   ): Promise<void>;
   delete(
-    id: number,
+    taskId: number,
+    userId: number,
     callback: (err: Error | null, isAproved?: boolean) => void
   ): Promise<void>;
   updateTaskTitle(

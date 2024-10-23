@@ -140,18 +140,26 @@ export default class TaskRepositoryDB implements ITaskRepository {
   }
 
   async updateTaskToActive(
-    id: number,
+    taskId: number,
+    userId: number,
     callback: (err: Error | null, task?: Task | null) => void
   ): Promise<void> {
     const connection = await setupDatabase();
-    const query = `UPDATE tasks SET status = ? WHERE id = ?`;
-    await connection.execute(query, ["active", id]);
-    const [rows] = await connection.execute(
-      `SELECT * FROM tasks WHERE id = ?`,
-      [id]
+
+    await connection.execute(
+      `UPDATE tasks SET status = ? WHERE id = ? AND user_id = ?`,
+      ["active", taskId, userId]
     );
+
+    const [rows] = await connection.execute(
+      `SELECT * FROM tasks WHERE id = ? AND user_id = ?`,
+      [taskId, userId]
+    );
+
     const row = (rows as any[])[0];
+
     if (!row) return callback(null, null);
+
     const taskReturn = new Task(
       row.id,
       row.title,
@@ -159,24 +167,33 @@ export default class TaskRepositoryDB implements ITaskRepository {
       row.status,
       row.priority,
       row.createdAt,
-      row.userId
+      row.user_id
     );
+
     callback(null, taskReturn);
   }
 
   async updateTaskToRemoved(
-    id: number,
+    taskId: number,
+    userId: number,
     callback: (err: Error | null, task?: Task | null) => void
   ): Promise<void> {
     const connection = await setupDatabase();
-    const query = `UPDATE tasks SET status = ? WHERE id = ?`;
-    await connection.execute(query, ["removed", id]);
-    const [rows] = await connection.execute(
-      `SELECT * FROM tasks WHERE id = ?`,
-      [id]
+
+    await connection.execute(
+      `UPDATE tasks SET status = ? WHERE id = ? AND user_id = ?`,
+      ["removed", taskId, userId]
     );
+
+    const [rows] = await connection.execute(
+      `SELECT * FROM tasks WHERE id = ? AND user_id = ?`,
+      [taskId, userId]
+    );
+
     const row = (rows as any[])[0];
+
     if (!row) return callback(null, null);
+
     const taskReturn = new Task(
       row.id,
       row.title,
@@ -184,33 +201,53 @@ export default class TaskRepositoryDB implements ITaskRepository {
       row.status,
       row.priority,
       row.createdAt,
-      row.userId
+      row.user_id
     );
+
     callback(null, taskReturn);
   }
 
   async delete(
-    id: number,
+    taskId: number,
+    userId: number,
     callback: (err: Error | null, isAproved?: boolean) => void
   ): Promise<void> {
     const connection = await setupDatabase();
+
     const [rows] = await connection.execute(
-      `SELECT * FROM tasks WHERE id = ?`,
-      [id]
+      `SELECT * FROM tasks WHERE id = ? AND user_id = ?`,
+      [taskId, userId]
     );
+
     const row = (rows as any[])[0];
+
     if (!row) return callback(null, false);
-    const query = `DELETE FROM tasks WHERE id = ?`;
-    await connection.execute(query, [id]);
+
+    await connection.execute(`DELETE FROM tasks WHERE id = ? AND user_id = ?`, [
+      taskId,
+      userId,
+    ]);
+
     callback(null, true);
   }
 
   async findAllTasksActive(
+    userId: number,
     callback: (err: Error | null, tasks?: Task[]) => void
   ): Promise<void> {
     const connection = await setupDatabase();
-    const query = `SELECT * FROM tasks WHERE status = "active"`;
-    const [rows] = await connection.execute(query);
+
+    const [rows] = await connection.execute(
+      `SELECT * FROM tasks WHERE status = "active" AND user_id = ?`,
+      [userId]
+    );
+
+    if (!(rows as any)[0])
+      return callback({
+        name: "Tasks not found",
+        message: "Nenhuma task ativa foi encontrada para esse usuário.",
+      });
+
     const tasks = (rows as any[]).map(
       (row) =>
         new Task(
@@ -220,9 +257,10 @@ export default class TaskRepositoryDB implements ITaskRepository {
           row.status,
           row.priority,
           row.createdAt,
-          row.userId
+          row.user_id
         )
     );
+
     callback(null, tasks);
   }
 

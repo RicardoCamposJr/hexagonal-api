@@ -36,32 +36,32 @@ export default class TaskController {
     );
     router.get("/:id", jwtAuthMiddleware, this.findByTaskIdHandler.bind(this));
     router.get(
-      "/active",
+      "/actives",
       jwtAuthMiddleware,
       this.findAllTasksActiveHandler.bind(this)
     );
     router.get(
-      "/concluded",
+      "/concludeds",
       jwtAuthMiddleware,
       this.findAllTasksConcludedHandler.bind(this)
     );
     router.get(
-      "/removed",
+      "/removeds",
       jwtAuthMiddleware,
       this.findAllTasksRemovedHandler.bind(this)
     );
     router.get(
-      "/low",
+      "/lows",
       jwtAuthMiddleware,
       this.findAllTasksLowHandler.bind(this)
     );
     router.get(
-      "/medium",
+      "/mediums",
       jwtAuthMiddleware,
       this.findAllTasksMediumHandler.bind(this)
     );
     router.get(
-      "/high",
+      "/highs",
       jwtAuthMiddleware,
       this.findAllTasksHighHandler.bind(this)
     );
@@ -354,18 +354,16 @@ export default class TaskController {
     }
   }
 
-  // PAREI AQUI, CONTINUE COLOCANDO O ID DO USUÁRIO NAS FUNÇÕES ABAIXO!!!
-
   async updateTaskToActiveHandler(req: IAuthenticatedRequest, res: Response) {
     const activeUseCase = new UpdateTaskToActiveUseCase(this.taskRepository);
 
     try {
-      let id;
+      let taskId;
 
-      id = parseInt(req.params.id, 10);
+      taskId = parseInt(req.params.id, 10);
 
       if (req.params.id) {
-        if (isNaN(id)) {
+        if (isNaN(taskId)) {
           return res.status(400).send({
             message:
               "Não foi possível buscar a task. O id de busca não é do tipo number!",
@@ -373,7 +371,7 @@ export default class TaskController {
           });
         }
 
-        activeUseCase.execute(id, (err, task) => {
+        activeUseCase.execute(taskId, req.user?.id as number, (err, task) => {
           if (err) {
             return res.status(500).send({
               message:
@@ -405,12 +403,12 @@ export default class TaskController {
     const removedUseCase = new UpdateTaskToRemovedUseCase(this.taskRepository);
 
     try {
-      let id;
+      let taskId;
 
-      id = parseInt(req.params.id, 10);
+      taskId = parseInt(req.params.id, 10);
 
       if (req.params.id) {
-        if (isNaN(id)) {
+        if (isNaN(taskId)) {
           return res.status(400).send({
             message:
               "Não foi possível buscar a task. O id de busca não é do tipo number!",
@@ -418,7 +416,7 @@ export default class TaskController {
           });
         }
 
-        removedUseCase.execute(id, (err, task) => {
+        removedUseCase.execute(taskId, req.user?.id as number, (err, task) => {
           if (err) {
             return res.status(500).send({
               message:
@@ -450,12 +448,12 @@ export default class TaskController {
     const deleteTaskUseCase = new DeleteTaskUseCase(this.taskRepository);
 
     try {
-      let id;
+      let taskId;
 
-      id = parseInt(req.params.id, 10);
+      taskId = parseInt(req.params.id, 10);
 
       if (req.params.id) {
-        if (isNaN(id)) {
+        if (isNaN(taskId)) {
           return res.status(400).send({
             message:
               "Não foi possível buscar a task. O id de busca não é do tipo number!",
@@ -463,23 +461,27 @@ export default class TaskController {
           });
         }
 
-        deleteTaskUseCase.execute(id, (err, isAproved) => {
-          if (err) {
-            res.status(500).send({
-              message:
-                "Um erro interno ocorreu. Não foi possível realizar essa ação.",
-              details: err.message,
-              hint: "Por favor, tente novamente mais tarde ou contate o suporte se o problema persistir.",
-            });
-          } else if (!isAproved) {
-            return res.status(404).json({
-              message: "Não encontramos uma task com o id de busca inserido!",
-              hint: "Por favor, revise os dados para realizar a ação.",
-            });
-          } else {
-            res.status(204).send("Sua task foi deletada!");
+        deleteTaskUseCase.execute(
+          taskId,
+          req.user?.id as number,
+          (err, isAproved) => {
+            if (err) {
+              res.status(500).send({
+                message:
+                  "Um erro interno ocorreu. Não foi possível realizar essa ação.",
+                details: err.message,
+                hint: "Por favor, tente novamente mais tarde ou contate o suporte se o problema persistir.",
+              });
+            } else if (!isAproved) {
+              return res.status(404).json({
+                message: "Não encontramos uma task com o id de busca inserido!",
+                hint: "Por favor, revise os dados para realizar a ação.",
+              });
+            } else {
+              res.status(204).send("Sua task foi deletada!");
+            }
           }
-        });
+        );
       }
     } catch (error) {
       return res.status(500).send({
@@ -497,18 +499,29 @@ export default class TaskController {
     );
 
     try {
-      findAllTasksActiveUseCase.execute((err, tasks) => {
-        if (err) {
-          return res.status(500).send({
-            message:
-              "Um erro interno ocorreu. Não foi possível realizar essa ação.",
-            details: err.message,
-            hint: "Por favor, tente novamente mais tarde ou contate o suporte se o problema persistir.",
-          });
-        } else {
-          return res.status(200).json(tasks);
+      findAllTasksActiveUseCase.execute(
+        req.user?.id as number,
+        (err, tasks) => {
+          if (err) {
+            if (err.name == "Tasks not found") {
+              return res.status(404).send({
+                message:
+                  "Nenhuma task ativa foi encontrada! Não há nenhuma task ativa para esse usuário.",
+                details: err.message,
+                hint: "Crie tasks para elas apareceram aqui!",
+              });
+            }
+            return res.status(500).send({
+              message:
+                "Um erro interno ocorreu. Não foi possível realizar essa ação.",
+              details: err.message,
+              hint: "Por favor, tente novamente mais tarde ou contate o suporte se o problema persistir.",
+            });
+          } else {
+            return res.status(200).json(tasks);
+          }
         }
-      });
+      );
     } catch (error) {
       return res.status(500).send({
         message:

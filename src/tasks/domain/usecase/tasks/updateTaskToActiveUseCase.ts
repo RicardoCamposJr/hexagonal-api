@@ -5,9 +5,10 @@ export default class UpdateTaskToActiveUseCase {
   constructor(readonly taskRepository: ITaskRepository) {}
 
   async execute(
-    id: number,
+    taskId: number,
+    userId: number,
     callback: (err: Error | null, task?: Task | null) => void
   ): Promise<void> {
-    await this.taskRepository.updateTaskToActive(id, callback);
+    await this.taskRepository.updateTaskToActive(taskId, userId, callback);
   }
 }

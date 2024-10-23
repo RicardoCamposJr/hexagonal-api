@@ -5,8 +5,9 @@ export default class FindAllTasksActiveUseCase {
   constructor(readonly taskRepository: ITaskRepository) {}
 
   async execute(
+    userId: number,
     callback: (err: Error | null, tasks?: Task[]) => void
   ): Promise<void> {
-    await this.taskRepository.findAllTasksActive(callback);
+    await this.taskRepository.findAllTasksActive(userId, callback);
   }
 }

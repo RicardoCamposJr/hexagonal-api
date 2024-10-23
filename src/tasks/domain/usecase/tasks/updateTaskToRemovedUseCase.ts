@@ -5,9 +5,10 @@ export default class UpdateTaskToRemovedUseCase {
   constructor(readonly taskRepository: ITaskRepository) {}
 
   async execute(
-    id: number,
+    taskId: number,
+    userId: number,
     callback: (err: Error | null, task?: Task | null) => void
   ): Promise<void> {
-    await this.taskRepository.updateTaskToRemoved(id, callback);
+    await this.taskRepository.updateTaskToRemoved(taskId, userId, callback);
   }
 }
