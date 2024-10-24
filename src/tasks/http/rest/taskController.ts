@@ -470,19 +470,24 @@ export default class TaskController {
 		}
 	}
 
-	// PAREI AQUI, CONTINUE ABAIXO...
-
 	async updateTaskTitleHandler(req: IAuthenticatedRequest, res: Response) {
 		const updateTaskTitleUseCase = new UpdateTaskTitleUseCase(this.taskRepository);
 
 		try {
-			let id;
+			let taskId;
 
-			id = parseInt(req.body.id, 10);
+			taskId = parseInt(req.body.id, 10);
 			const title = req.body.title;
 
+			if (!title) {
+				return res.status(400).send({
+					message: "Não foi possível atualizar o título da task. O novo título não foi inserido!",
+					hint: "Por favor, insira um novo título para realizar a ação.",
+				});
+			}
+
 			if (req.body.id) {
-				if (isNaN(id)) {
+				if (isNaN(taskId)) {
 					return res.status(400).send({
 						message: "Não foi possível buscar a task. O id de busca não é do tipo number!",
 						hint: "Por favor, insira o id de busca do tipo number para realizar a ação.",
@@ -496,7 +501,7 @@ export default class TaskController {
 					});
 				}
 
-				updateTaskTitleUseCase.execute(id, title, (err, task) => {
+				updateTaskTitleUseCase.execute(taskId, req.user?.id as number, title, (err, task) => {
 					if (err) {
 						return res.status(500).send({
 							message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
@@ -505,7 +510,7 @@ export default class TaskController {
 						});
 					} else if (!task) {
 						return res.status(404).json({
-							message: "Não foi possível encontrar a task. Não temos uma task com esse id!",
+							message: "Não foi possível encontrar a task. O usuário não possui uma task com esse id!",
 							hint: "Por favor, insira um id válido.",
 						});
 					} else {
@@ -531,27 +536,27 @@ export default class TaskController {
 		const updateTaskDescriptionUseCase = new UpdateTaskDescriptionUseCase(this.taskRepository);
 
 		try {
-			let id;
+			let taskId;
 
-			id = parseInt(req.body.id, 10);
+			taskId = parseInt(req.body.id, 10);
 			const description = req.body.description;
 
+			if (!description) {
+				return res.status(400).send({
+					message: "Não foi possível atualizar a descrição da task. A nova descrição não foi inserida!",
+					hint: "Por favor, insira uma nova descrição para realizar a ação.",
+				});
+			}
+
 			if (req.body.id) {
-				if (isNaN(id)) {
+				if (isNaN(taskId)) {
 					return res.status(400).send({
 						message: "Não foi possível buscar a task. O id de busca não é do tipo number!",
 						hint: "Por favor, insira o id de busca do tipo number para realizar a ação.",
 					});
 				}
 
-				if (!req.body.description) {
-					return res.status(400).send({
-						message: "Não foi possível atualizar a descrição da task. A nova descrição não foi inserida!",
-						hint: "Por favor, insira uma nova descrição para realizar a ação.",
-					});
-				}
-
-				updateTaskDescriptionUseCase.execute(id, description, (err, task) => {
+				updateTaskDescriptionUseCase.execute(taskId, req.user?.id as number, description, (err, task) => {
 					if (err) {
 						return res.status(500).send({
 							message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
@@ -586,19 +591,19 @@ export default class TaskController {
 		const updateTaskToLowUseCase = new UpdateTaskToLowUseCase(this.taskRepository);
 
 		try {
-			let id;
+			let taskId;
 
-			id = parseInt(req.params.id, 10);
+			taskId = parseInt(req.params.id, 10);
 
 			if (req.params.id) {
-				if (isNaN(id)) {
+				if (isNaN(taskId)) {
 					return res.status(400).send({
 						message: "Não foi possível buscar a task. O id de busca não é do tipo number!",
 						hint: "Por favor, insira o id de busca do tipo number para realizar a ação.",
 					});
 				}
 
-				updateTaskToLowUseCase.execute(id, (err, task) => {
+				updateTaskToLowUseCase.execute(taskId, req.user?.id as number, (err, task) => {
 					if (err) {
 						return res.status(500).send({
 							message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
@@ -607,7 +612,7 @@ export default class TaskController {
 						});
 					} else if (!task) {
 						return res.status(404).json({
-							message: "Não foi possível encontrar a task. Não temos uma task com esse id!",
+							message: "Não foi possível encontrar a task. O usuário não uma task com esse id!",
 							hint: "Por favor, insira um id válido.",
 						});
 					} else {
@@ -628,19 +633,19 @@ export default class TaskController {
 		const updateTaskToMediumUseCase = new UpdateTaskToMediumUseCase(this.taskRepository);
 
 		try {
-			let id;
+			let taskId;
 
-			id = parseInt(req.params.id, 10);
+			taskId = parseInt(req.params.id, 10);
 
 			if (req.params.id) {
-				if (isNaN(id)) {
+				if (isNaN(taskId)) {
 					return res.status(400).send({
 						message: "Não foi possível buscar a task. O id de busca não é do tipo number!",
 						hint: "Por favor, insira o id de busca do tipo number para realizar a ação.",
 					});
 				}
 
-				updateTaskToMediumUseCase.execute(id, (err, task) => {
+				updateTaskToMediumUseCase.execute(taskId, req.user?.id as number, (err, task) => {
 					if (err) {
 						return res.status(500).send({
 							message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
@@ -670,19 +675,19 @@ export default class TaskController {
 		const updateTaskToHighUseCase = new UpdateTaskToHighUseCase(this.taskRepository);
 
 		try {
-			let id;
+			let taskId;
 
-			id = parseInt(req.params.id, 10);
+			taskId = parseInt(req.params.id, 10);
 
 			if (req.params.id) {
-				if (isNaN(id)) {
+				if (isNaN(taskId)) {
 					return res.status(400).send({
 						message: "Não foi possível buscar a task. O id de busca não é do tipo number!",
 						hint: "Por favor, insira o id de busca do tipo number para realizar a ação.",
 					});
 				}
 
-				updateTaskToHighUseCase.execute(id, (err, task) => {
+				updateTaskToHighUseCase.execute(taskId, req.user?.id as number, (err, task) => {
 					if (err) {
 						return res.status(500).send({
 							message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
@@ -712,8 +717,16 @@ export default class TaskController {
 		const findAllTasksLowUseCase = new FindAllTasksLowUseCase(this.taskRepository);
 
 		try {
-			findAllTasksLowUseCase.execute((err, tasks) => {
+			findAllTasksLowUseCase.execute(req.user?.id as number, (err, tasks) => {
 				if (err) {
+					if (err.name == "Tasks not found") {
+						return res.status(404).send({
+							message: "Nenhuma task low foi encontrada! Não há nenhuma task low para esse usuário.",
+							details: err.message,
+							hint: "Altere a prioridade das tasks para 'low' para elas apareceram aqui!",
+						});
+					}
+
 					return res.status(500).send({
 						message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
 						details: err.message,
@@ -736,8 +749,16 @@ export default class TaskController {
 		const findAllTasksMediumUseCase = new FindAllTasksMediumUseCase(this.taskRepository);
 
 		try {
-			findAllTasksMediumUseCase.execute((err, tasks) => {
+			findAllTasksMediumUseCase.execute(req.user?.id as number, (err, tasks) => {
 				if (err) {
+					if (err.name == "Tasks not found") {
+						return res.status(404).send({
+							message: "Nenhuma task medium foi encontrada! Não há nenhuma task medium para esse usuário.",
+							details: err.message,
+							hint: "Altere a prioridade das tasks para 'medium' para elas apareceram aqui!",
+						});
+					}
+
 					return res.status(500).send({
 						message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
 						details: err.message,
@@ -760,8 +781,16 @@ export default class TaskController {
 		const findAllTasksHighUseCase = new FindAllTasksHighUseCase(this.taskRepository);
 
 		try {
-			findAllTasksHighUseCase.execute((err, tasks) => {
+			findAllTasksHighUseCase.execute(req.user?.id as number, (err, tasks) => {
 				if (err) {
+					if (err.name == "Tasks not found") {
+						return res.status(404).send({
+							message: "Nenhuma task high foi encontrada! Não há nenhuma task high para esse usuário.",
+							details: err.message,
+							hint: "Altere a prioridade das tasks para 'high' para elas apareceram aqui!",
+						});
+					}
+
 					return res.status(500).send({
 						message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
 						details: err.message,

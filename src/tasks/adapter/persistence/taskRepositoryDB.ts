@@ -164,82 +164,136 @@ export default class TaskRepositoryDB implements ITaskRepository {
 		callback(null, tasks);
 	}
 
-	async updateTaskTitle(id: number, title: string, callback: (err: Error | null, task?: Task | null) => void): Promise<void> {
+	async updateTaskTitle(taskId: number, userId: number, title: string, callback: (err: Error | null, task?: Task | null) => void): Promise<void> {
 		const connection = await setupDatabase();
-		const query = `UPDATE tasks SET title = ? WHERE id = ?`;
-		await connection.execute(query, [title, id]);
-		const [rows] = await connection.execute(`SELECT * FROM tasks WHERE id = ?`, [id]);
+
+		await connection.execute(`UPDATE tasks SET title = ? WHERE id = ? AND user_id = ?`, [title, taskId, userId]);
+
+		const [rows] = await connection.execute(`SELECT * FROM tasks WHERE id = ? AND user_id = ?`, [taskId, userId]);
+
 		const row = (rows as any[])[0];
+
 		if (!row) return callback(null, null);
-		const taskReturn = new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt, row.userId);
+
+		const taskReturn = new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt, row.user_id);
+
 		callback(null, taskReturn);
 	}
 
-	async updateTaskDescription(id: number, description: string, callback: (err: Error | null, task?: Task | null) => void): Promise<void> {
+	async updateTaskDescription(
+		taskId: number,
+		userId: number,
+		description: string,
+		callback: (err: Error | null, task?: Task | null) => void,
+	): Promise<void> {
 		const connection = await setupDatabase();
-		const query = `UPDATE tasks SET description = ? WHERE id = ?`;
-		await connection.execute(query, [description, id]);
-		const [rows] = await connection.execute(`SELECT * FROM tasks WHERE id = ?`, [id]);
+
+		await connection.execute(`UPDATE tasks SET description = ? WHERE id = ? AND user_id = ?`, [description, taskId, userId]);
+
+		const [rows] = await connection.execute(`SELECT * FROM tasks WHERE id = ? AND user_id = ?`, [taskId, userId]);
+
 		const row = (rows as any[])[0];
+
 		if (!row) return callback(null, null);
-		const taskReturn = new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt, row.userId);
+
+		const taskReturn = new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt, row.user_id);
+
 		callback(null, taskReturn);
 	}
 
-	async updateTaskToLow(id: number, callback: (err: Error | null, task?: Task | null) => void): Promise<void> {
+	async updateTaskToLow(taskId: number, userId: number, callback: (err: Error | null, task?: Task | null) => void): Promise<void> {
 		const connection = await setupDatabase();
-		const query = `UPDATE tasks SET priority = ? WHERE id = ?`;
-		await connection.execute(query, ["low", id]);
-		const [rows] = await connection.execute(`SELECT * FROM tasks WHERE id = ?`, [id]);
+
+		await connection.execute(`UPDATE tasks SET priority = ? WHERE id = ? AND user_id = ?`, ["low", taskId, userId]);
+
+		const [rows] = await connection.execute(`SELECT * FROM tasks WHERE id = ? AND user_id = ?`, [taskId, userId]);
+
 		const row = (rows as any[])[0];
+
 		if (!row) return callback(null, null);
-		const taskReturn = new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt, row.userId);
+
+		const taskReturn = new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt, row.user_id);
+
 		callback(null, taskReturn);
 	}
 
-	async updateTaskToMedium(id: number, callback: (err: Error | null, task?: Task | null) => void): Promise<void> {
+	async updateTaskToMedium(taskId: number, userId: number, callback: (err: Error | null, task?: Task | null) => void): Promise<void> {
 		const connection = await setupDatabase();
-		const query = `UPDATE tasks SET priority = ? WHERE id = ?`;
-		await connection.execute(query, ["medium", id]);
-		const [rows] = await connection.execute(`SELECT * FROM tasks WHERE id = ?`, [id]);
+
+		await connection.execute(`UPDATE tasks SET priority = ? WHERE id = ? AND user_id = ?`, ["medium", taskId, userId]);
+
+		const [rows] = await connection.execute(`SELECT * FROM tasks WHERE id = ? AND user_id = ?`, [taskId, userId]);
+
 		const row = (rows as any[])[0];
+
 		if (!row) return callback(null, null);
-		const taskReturn = new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt, row.userId);
+
+		const taskReturn = new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt, row.user_id);
+
 		callback(null, taskReturn);
 	}
 
-	async updateTaskToHigh(id: number, callback: (err: Error | null, task?: Task | null) => void): Promise<void> {
+	async updateTaskToHigh(taskId: number, userId: number, callback: (err: Error | null, task?: Task | null) => void): Promise<void> {
 		const connection = await setupDatabase();
-		const query = `UPDATE tasks SET priority = ? WHERE id = ?`;
-		await connection.execute(query, ["high", id]);
-		const [rows] = await connection.execute(`SELECT * FROM tasks WHERE id = ?`, [id]);
+
+		await connection.execute(`UPDATE tasks SET priority = ? WHERE id = ? AND user_id = ?`, ["high", taskId, userId]);
+
+		const [rows] = await connection.execute(`SELECT * FROM tasks WHERE id = ? AND user_id = ?`, [taskId, userId]);
+
 		const row = (rows as any[])[0];
+
 		if (!row) return callback(null, null);
-		const taskReturn = new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt, row.userId);
+
+		const taskReturn = new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt, row.user_id);
+
 		callback(null, taskReturn);
 	}
 
-	async findAllTasksLow(callback: (err: Error | null, tasks?: Task[]) => void): Promise<void> {
+	async findAllTasksLow(userId: number, callback: (err: Error | null, tasks?: Task[]) => void): Promise<void> {
 		const connection = await setupDatabase();
-		const query = `SELECT * FROM tasks WHERE priority = "low"`;
-		const [rows] = await connection.execute(query);
-		const tasks = (rows as any[]).map((row) => new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt, row.userId));
+
+		const [rows] = await connection.execute(`SELECT * FROM tasks WHERE priority = "low" AND user_id = ?`, [userId]);
+
+		if (!(rows as any)[0])
+			return callback({
+				name: "Tasks not found",
+				message: "Nenhuma task de prioridade low foi encontrada para esse usuário.",
+			});
+
+		const tasks = (rows as any[]).map((row) => new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt, row.user_id));
+
 		callback(null, tasks);
 	}
 
-	async findAllTasksMedium(callback: (err: Error | null, tasks?: Task[]) => void): Promise<void> {
+	async findAllTasksMedium(userId: number, callback: (err: Error | null, tasks?: Task[]) => void): Promise<void> {
 		const connection = await setupDatabase();
-		const query = `SELECT * FROM tasks WHERE priority = "medium"`;
-		const [rows] = await connection.execute(query);
-		const tasks = (rows as any[]).map((row) => new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt, row.userId));
+
+		const [rows] = await connection.execute(`SELECT * FROM tasks WHERE priority = "medium" AND user_id = ?`, [userId]);
+
+		if (!(rows as any)[0])
+			return callback({
+				name: "Tasks not found",
+				message: "Nenhuma task de prioridade medium foi encontrada para esse usuário.",
+			});
+
+		const tasks = (rows as any[]).map((row) => new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt, row.user_id));
+
 		callback(null, tasks);
 	}
 
-	async findAllTasksHigh(callback: (err: Error | null, tasks?: Task[]) => void): Promise<void> {
+	async findAllTasksHigh(userId: number, callback: (err: Error | null, tasks?: Task[]) => void): Promise<void> {
 		const connection = await setupDatabase();
-		const query = `SELECT * FROM tasks WHERE priority = "high"`;
-		const [rows] = await connection.execute(query);
-		const tasks = (rows as any[]).map((row) => new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt, row.userId));
+
+		const [rows] = await connection.execute(`SELECT * FROM tasks WHERE priority = "high" AND user_id = ?`, [userId]);
+
+		if (!(rows as any)[0])
+			return callback({
+				name: "Tasks not found",
+				message: "Nenhuma task de prioridade high foi encontrada para esse usuário.",
+			});
+
+		const tasks = (rows as any[]).map((row) => new Task(row.id, row.title, row.description, row.status, row.priority, row.createdAt, row.user_id));
+
 		callback(null, tasks);
 	}
 }

@@ -11,13 +11,18 @@ export default interface ITaskRepository {
 	updateTaskToActive(taskId: number, userId: number, callback: (err: Error | null, task?: Task | null) => void): Promise<void>;
 	updateTaskToRemoved(taskId: number, userId: number, callback: (err: Error | null, task?: Task | null) => void): Promise<void>;
 	delete(taskId: number, userId: number, callback: (err: Error | null, isAproved?: boolean) => void): Promise<void>;
-	updateTaskTitle(id: number, title: string, callback: (err: Error | null, task?: Task | null) => void): Promise<void>;
-	updateTaskDescription(id: number, description: string, callback: (err: Error | null, task?: Task | null) => void): Promise<void>;
-	updateTaskToLow(id: number, callback: (err: Error | null, task?: Task | null) => void): Promise<void>;
-	updateTaskToMedium(id: number, callback: (err: Error | null, task?: Task | null) => void): Promise<void>;
-	updateTaskToHigh(id: number, callback: (err: Error | null, task?: Task | null) => void): Promise<void>;
-	findAllTasksLow(callback: (err: Error | null, tasks?: Task[]) => void): Promise<void>;
-	findAllTasksMedium(callback: (err: Error | null, tasks?: Task[]) => void): Promise<void>;
-	findAllTasksHigh(callback: (err: Error | null, tasks?: Task[]) => void): Promise<void>;
+	updateTaskTitle(taskId: number, userId: number, title: string, callback: (err: Error | null, task?: Task | null) => void): Promise<void>;
+	updateTaskDescription(
+		taskId: number,
+		userId: number,
+		description: string,
+		callback: (err: Error | null, task?: Task | null) => void,
+	): Promise<void>;
+	updateTaskToLow(taskId: number, userId: number, callback: (err: Error | null, task?: Task | null) => void): Promise<void>;
+	updateTaskToMedium(taskId: number, userId: number, callback: (err: Error | null, task?: Task | null) => void): Promise<void>;
+	updateTaskToHigh(taskId: number, userId: number, callback: (err: Error | null, task?: Task | null) => void): Promise<void>;
+	findAllTasksLow(userId: number, callback: (err: Error | null, tasks?: Task[]) => void): Promise<void>;
+	findAllTasksMedium(userId: number, callback: (err: Error | null, tasks?: Task[]) => void): Promise<void>;
+	findAllTasksHigh(userId: number, callback: (err: Error | null, tasks?: Task[]) => void): Promise<void>;
 	findAllTasksByUserId(userId: number, callback: (err: Error | null, tasks?: Task[] | null) => void): Promise<void>;
 }
