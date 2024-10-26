@@ -19,12 +19,14 @@ async function setupDatabase() {
 		email VARCHAR(255) NOT NULL UNIQUE
 	)`);
 
-	// Criando tabela de projetos
+	// Criando tabela de projetos com owner_id
 	await connection.query(`CREATE TABLE IF NOT EXISTS projects (
 		id INT AUTO_INCREMENT PRIMARY KEY,
 		name VARCHAR(255) NOT NULL,
 		description TEXT,
-		createdAt VARCHAR(255)
+		createdAt VARCHAR(255),
+		owner_id INT,
+		FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE SET NULL
 	)`);
 
 	// Tabela de associação entre projetos e usuários (Muitos-para-Muitos)
@@ -36,7 +38,7 @@ async function setupDatabase() {
 		FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 	)`);
 
-	// Criando tabela de tarefas
+	// Criando tabela de tarefas com referência a projetos e usuários
 	await connection.query(`CREATE TABLE IF NOT EXISTS tasks (
 		id INT AUTO_INCREMENT PRIMARY KEY,
 		title VARCHAR(255) NOT NULL,
