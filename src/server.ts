@@ -5,9 +5,12 @@ import UserRepositoryDB from "./tasks/adapter/persistence/userRepositoryDB";
 import UserController from "./tasks/http/rest/userController";
 import { PasswordEncryption } from "./tasks/adapter/encryption/passwordEncryption";
 import { JwtAuthTokenService } from "./tasks/adapter/jwt/JwtAuthService";
+import ProjectRepositoryDB from "./tasks/adapter/persistence/projectRepositoryDB";
+import ProjectController from "./tasks/http/rest/projectController";
 
 const taskRepository = new TaskRepositoryDB();
 const userRepository = new UserRepositoryDB();
+const projectRepository = new ProjectRepositoryDB();
 
 // Classe de encriptação de senha (Adapter):
 const passwordEncryptor = new PasswordEncryption();
@@ -16,19 +19,17 @@ const passwordEncryptor = new PasswordEncryption();
 const jwtTokenService = new JwtAuthTokenService();
 
 const taskController = new TaskController(taskRepository);
-const userController = new UserController(
-  userRepository,
-  passwordEncryptor,
-  jwtTokenService
-);
+const userController = new UserController(userRepository, passwordEncryptor, jwtTokenService);
+const projectController = new ProjectController(projectRepository);
 
 const app = express();
 
 app.use(express.json());
 app.use("/tasks", taskController.buildRouter());
 app.use("/users", userController.buildRouter());
+app.use("/project", projectController.buildRouter());
 
 const PORT = 3000;
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+	console.log(`Server is running on port ${PORT}`);
 });

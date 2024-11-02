@@ -1,4 +1,4 @@
-export default class Task {
+export default class Project {
 	constructor(
 		public id: number | null | undefined,
 		public ownerId: number,

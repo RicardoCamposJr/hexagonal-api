@@ -24,8 +24,8 @@ async function setupDatabase() {
 		id INT AUTO_INCREMENT PRIMARY KEY,
 		name VARCHAR(255) NOT NULL,
 		description TEXT,
-		createdAt VARCHAR(255),
-		owner_id INT,
+		createdAt VARCHAR(255), 
+		owner_id INT, 
 		FOREIGN KEY (owner_id) REFERENCES users(id) ON DELETE SET NULL
 	)`);
 
