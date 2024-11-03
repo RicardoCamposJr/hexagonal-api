@@ -17,9 +17,11 @@ export default class ProjectRepositoryDB implements IProjectRepository {
 
 		const query = `INSERT INTO projects (name, description, createdAt, owner_id) VALUES (?, ?, ?, ?)`;
 
-		const [result] = await connection.execute(query, [project.name, project.description, project.createdAt, project.ownerId]);
+		const [resultProjectCreation] = await connection.execute(query, [project.name, project.description, project.createdAt, project.ownerId]);
 
-		project.id = (result as any).insertId;
+		project.id = (resultProjectCreation as any).insertId;
+
+		await connection.execute(`INSERT INTO project_users (project_id, user_id) VALUES (?, ?)`, [project.id, project.ownerId]);
 
 		callback(null, project);
 	}
