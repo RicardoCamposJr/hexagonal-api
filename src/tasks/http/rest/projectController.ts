@@ -6,6 +6,7 @@ import { IAuthenticatedRequest } from "../../adapter/middlewares/interfaces/IAut
 import { jwtAuthMiddleware } from "../../adapter/middlewares/jwtAuthMiddleware";
 import FindAllProjectsUseCase from "../../domain/usecase/projects/findAllProjectsUseCase";
 import FindProjectByIdUseCase from "../../domain/usecase/projects/findProjectByIdUseCase";
+import UpdateProjectDetailsUseCase from "../../domain/usecase/projects/updateProjectDetails";
 
 export default class ProjectController {
 	constructor(readonly projectRepository: ProjectRepositoryDB) {}
@@ -15,6 +16,7 @@ export default class ProjectController {
 		router.post("/", jwtAuthMiddleware, this.registerProjectHandler.bind(this));
 		router.get("/", jwtAuthMiddleware, this.findAllProjectsHandler.bind(this));
 		router.get("/:id", jwtAuthMiddleware, this.findProjectByIdHandler.bind(this));
+		router.patch("/:id", jwtAuthMiddleware, this.updateProjectDetailsHandler.bind(this));
 
 		return router;
 	}
@@ -129,7 +131,63 @@ export default class ProjectController {
 				});
 			} else {
 				return res.status(400).send({
-					message: "Não foi possível buscar a task. Não encontramos o id de busca!",
+					message: "Não foi possível buscar pelo projeto. Não encontramos o id de busca!",
+					hint: "Por favor, insira o id de busca para realizar a ação.",
+				});
+			}
+		} catch (error) {
+			return res.status(500).send({
+				message: "Um erro interno ocorreu. Não foi possível realizar essa ação.",
+				details: error,
+				hint: "Por favor, tente novamente mais tarde ou contate o suporte se o problema persistir.",
+			});
+		}
+	}
+
+	async updateProjectDetailsHandler(req: IAuthenticatedRequest, res: Response) {
+		const updateProjectDetailsUseCase = new UpdateProjectDetailsUseCase(this.projectRepository);
+
+		try {
+			const { name, description } = req.body;
+
+			if (!name && !description) {
+				return res.status(400).send({
+					message: "Não foi possível atualizar o projeto. O novo nome ou descrição do projeto não foram inseridos!",
+					hint: "Por favor, defina um novo nome ou descrição para o projeto!",
+				});
+			}
+
+			let id;
+
+			id = parseInt(req.params.id, 10);
+
+			if (req.params.id) {
+				if (isNaN(id)) {
+					return res.status(400).send({
+						message: "Não foi possível atualizar os detalhes do projeto. O id inserido não é do tipo number!",
+						hint: "Por favor, insira o id de busca do tipo number para realizar a ação.",
+					});
+				}
+
+				updateProjectDetailsUseCase.execute(
+					req.user?.id as number,
+					id,
+					(err, project) => {
+						if (!project) {
+							return res.status(404).send({
+								message: "Não encontramos um projeto com o id informado. Não foi possível realizar essa ação.",
+								hint: "Por favor, insira um id existente.",
+							});
+						} else {
+							return res.status(201).json(project);
+						}
+					},
+					name,
+					description,
+				);
+			} else {
+				return res.status(400).send({
+					message: "Não foi possível buscar pelo projeto. Não encontramos o id de busca!",
 					hint: "Por favor, insira o id de busca para realizar a ação.",
 				});
 			}

@@ -79,16 +79,43 @@ export default class ProjectRepositoryDB implements IProjectRepository {
 	async updateProjectDetails(
 		userId: number,
 		projectId: number,
-		name: string,
-		description: string,
 		callback: (err: Error | null, project?: Project | null) => void,
+		name?: string,
+		description?: string,
 	): Promise<void> {
-		// const connection = await setupDatabase();
-		// const query = `UPDATE projects SET name = ?, description = ? WHERE id = ? AND owner_id = ?`;
-		// const [result] = await connection.execute(query, [name, description, projectId, userId]);
-		// if ((result as any).affectedRows === 0) return callback(new Error("Projeto não encontrado ou usuário não autorizado"));
-		// const updatedProject = new Project(projectId, name, description, userId);
-		// callback(null, updatedProject);
+		const connection = await setupDatabase();
+
+		try {
+			let result;
+
+			if (name) {
+				[result] = await connection.execute(`UPDATE projects SET name = ? WHERE id = ? AND owner_id = ?`, [name, projectId, userId]);
+
+				if ((result as any).affectedRows == 0) return callback(null, null);
+			}
+
+			if (description) {
+				[result] = await connection.execute(`UPDATE projects SET description = ? WHERE id = ? AND owner_id = ?`, [description, projectId, userId]);
+
+				if ((result as any).affectedRows == 0) return callback(null, null);
+			}
+
+			const [resultSelected] = await connection.execute(`SELECT * FROM projects WHERE id = ? AND owner_id = ?`, [projectId, userId]);
+
+			const updatedProject = new Project(
+				projectId,
+				userId,
+				(resultSelected as any[])[0].name,
+				(resultSelected as any[])[0].description,
+				(resultSelected as any[])[0].createdAt,
+			);
+
+			return callback(null, updatedProject);
+		} catch (error) {
+			callback(null, null);
+		} finally {
+			await connection.end();
+		}
 	}
 
 	// Excluir um projeto específico associado ao userId

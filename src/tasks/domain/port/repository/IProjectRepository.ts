@@ -7,9 +7,9 @@ export default interface IProjectRepository {
 	updateProjectDetails(
 		userId: number,
 		projectId: number,
-		name: string,
-		description: string,
 		callback: (err: Error | null, project?: Project | null) => void,
+		name?: string,
+		description?: string,
 	): Promise<void>;
 	delete(userId: number, projectId: number, callback: (err: Error | null, isDeleted?: boolean) => void): Promise<void>;
 	addUserToProject(userId: number, projectId: number, newUserId: number, callback: (err: Error | null, isAdded?: boolean) => void): Promise<void>;

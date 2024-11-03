@@ -7,10 +7,10 @@ export default class UpdateProjectDetailsUseCase {
 	async execute(
 		userId: number,
 		projectId: number,
-		name: string,
-		description: string,
 		callback: (err: Error | null, project?: Project | null) => void,
+		name?: string,
+		description?: string,
 	): Promise<void> {
-		await this.projectRepository.updateProjectDetails(userId, projectId, name, description, callback);
+		await this.projectRepository.updateProjectDetails(userId, projectId, callback, name, description);
 	}
 }
