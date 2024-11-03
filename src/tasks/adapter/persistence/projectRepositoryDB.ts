@@ -25,12 +25,10 @@ export default class ProjectRepositoryDB implements IProjectRepository {
 		callback(null, project);
 	}
 
-	// Retornar todos os projetos do userId
 	async findAll(userId: number, callback: (err: Error | null, projects?: Project[]) => void): Promise<void> {
 		const connection = await setupDatabase();
 
 		try {
-			// Realiza uma consulta que busca todos os projetos associados ao `userId`
 			const [rows] = await connection.execute(
 				`
             SELECT p.* 
@@ -41,26 +39,40 @@ export default class ProjectRepositoryDB implements IProjectRepository {
 				[userId],
 			);
 
-			// Retorna os projetos como um array de objetos `Project`
 			const projects = rows as Project[];
 
 			callback(null, projects);
 		} catch (error) {
 			callback(error as Error);
 		} finally {
-			await connection.end(); // Certifique-se de fechar a conexão após a consulta
+			await connection.end();
 		}
 	}
 
-	// Retornar um projeto específico associado ao userId
 	async findById(userId: number, projectId: number, callback: (err: Error | null, project?: Project | null) => void): Promise<void> {
-		// const connection = await setupDatabase();
-		// const query = `SELECT * FROM projects WHERE id = ? AND owner_id = ?`;
-		// const [rows] = await connection.execute(query, [projectId, userId]);
-		// if ((rows as any[]).length === 0) return callback(null, null);
-		// const projectRow = (rows as any[])[0];
-		// const project = new Project(projectRow.id, projectRow.name, projectRow.description, projectRow.owner_id);
-		// callback(null, project);
+		const connection = await setupDatabase();
+
+		try {
+			const [rows] = await connection.execute(
+				`SELECT p.* 
+            FROM projects p 
+            INNER JOIN project_users pu ON p.id = pu.project_id 
+            WHERE p.id = ? AND pu.user_id = ?`,
+				[projectId, userId],
+			);
+
+			if ((rows as any[]).length === 0) return callback(null, null);
+
+			const projectRow = (rows as any[])[0];
+
+			const project = new Project(projectRow.id, projectRow.owner_id, projectRow.name, projectRow.description, projectRow.createdAt);
+
+			callback(null, project);
+		} catch (error) {
+			callback(error as Error);
+		} finally {
+			await connection.end();
+		}
 	}
 
 	// Atualizar o nome e a descrição de um projeto, validando o userId
