@@ -3,7 +3,6 @@ import IProjectRepository from "../../domain/port/repository/IProjectRepository"
 import setupDatabase from "./db";
 
 export default class ProjectRepositoryDB implements IProjectRepository {
-	// Salvar um novo projeto associado ao userId
 	async save(project: Project, callback: (err: Error | null, project?: Project) => void): Promise<void> {
 		const connection = await setupDatabase();
 
@@ -28,11 +27,29 @@ export default class ProjectRepositoryDB implements IProjectRepository {
 
 	// Retornar todos os projetos do userId
 	async findAll(userId: number, callback: (err: Error | null, projects?: Project[]) => void): Promise<void> {
-		// const connection = await setupDatabase();
-		// const query = `SELECT * FROM projects WHERE owner_id = ?`;
-		// const [rows] = await connection.execute(query, [userId]);
-		// const projects = (rows as any[]).map((row) => new Project(row.id, row.name, row.description, row.owner_id));
-		// callback(null, projects);
+		const connection = await setupDatabase();
+
+		try {
+			// Realiza uma consulta que busca todos os projetos associados ao `userId`
+			const [rows] = await connection.execute(
+				`
+            SELECT p.* 
+            FROM projects p
+            INNER JOIN project_users pu ON p.id = pu.project_id
+            WHERE pu.user_id = ?
+        `,
+				[userId],
+			);
+
+			// Retorna os projetos como um array de objetos `Project`
+			const projects = rows as Project[];
+
+			callback(null, projects);
+		} catch (error) {
+			callback(error as Error);
+		} finally {
+			await connection.end(); // Certifique-se de fechar a conexão após a consulta
+		}
 	}
 
 	// Retornar um projeto específico associado ao userId
